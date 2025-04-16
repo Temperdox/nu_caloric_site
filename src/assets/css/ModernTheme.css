@@ -1,0 +1,640 @@
+/* CyberpunkTheme.css - Styling based on cyan, magenta and black */
+
+:root {
+    /* Base colors from specified palette */
+    --cyber-cyan: rgba(0, 255, 255, 0.7);
+    --cyber-magenta: rgba(255, 0, 255, 0.7);
+    --cyber-black: #000000;
+
+    /* Derived colors for depth and contrast */
+    --cyber-cyan-dark: rgba(0, 180, 180, 0.7);
+    --cyber-magenta-dark: rgba(180, 0, 180, 0.7);
+    --cyber-gray: #111111;
+    --cyber-dark-gray: #0a0a0a;
+
+    /* Text colors */
+    --cyber-text: #ffffff;
+    --cyber-text-dim: rgba(255, 255, 255, 0.7);
+
+    /* Gradients */
+    --cyber-gradient-cyan: linear-gradient(135deg, var(--cyber-cyan), rgba(0, 100, 100, 0.7));
+    --cyber-gradient-magenta: linear-gradient(135deg, var(--cyber-magenta), rgba(100, 0, 100, 0.7));
+    --cyber-gradient-mix: linear-gradient(135deg, var(--cyber-cyan), var(--cyber-magenta));
+
+    /* Effects */
+    --cyber-glow-cyan: 0 0 15px rgba(0, 255, 255, 0.7);
+    --cyber-glow-magenta: 0 0 15px rgba(255, 0, 255, 0.7);
+    --cyber-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Main container */
+.modern-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cyber-black);
+    background-image:
+            radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.15) 0%, transparent 50%);
+    color: var(--cyber-text);
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
+
+/* Header bar */
+.modern-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cyber-cyan);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    height: 60px;
+    position: relative;
+    z-index: 10;
+}
+
+.modern-logo {
+    font-size: 24px;
+    font-weight: 700;
+    background: var(--cyber-gradient-mix);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+}
+
+.modern-nav {
+    display: flex;
+    gap: 20px;
+}
+
+.modern-nav-item {
+    color: var(--cyber-text);
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+}
+
+.modern-nav-item:hover {
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+.modern-nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--cyber-gradient-cyan);
+    transition: width 0.3s ease;
+}
+
+.modern-nav-item:hover::after {
+    width: 100%;
+}
+
+.modern-nav-item.active {
+    color: var(--cyber-cyan);
+}
+
+.modern-nav-item.active::after {
+    width: 100%;
+}
+
+/* Fix for navigation buttons - ensure they work as buttons, not links */
+.modern-nav button.modern-nav-item {
+    background: transparent;
+    border: none;
+    color: var(--cyber-text);
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+}
+
+.modern-nav button.modern-nav-item:hover {
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+.modern-nav button.modern-nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--cyber-gradient-cyan);
+    transition: width 0.3s ease;
+}
+
+.modern-nav button.modern-nav-item:hover::after {
+    width: 100%;
+}
+
+.modern-nav button.modern-nav-item.active {
+    color: var(--cyber-cyan);
+}
+
+.modern-nav button.modern-nav-item.active::after {
+    width: 100%;
+}
+
+/* Logout button specific styling */
+.modern-nav button.logout-btn {
+    color: var(--cyber-magenta);
+}
+
+.modern-nav button.logout-btn:hover {
+    color: var(--cyber-magenta);
+    text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
+}
+
+.modern-nav button.logout-btn::after {
+    background: var(--cyber-gradient-magenta);
+}
+
+/* Main content area */
+.modern-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    overflow-y: auto;
+}
+
+/* Dashboard panels */
+.modern-panel {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    border: 1px solid var(--cyber-cyan);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    padding: 20px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.modern-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    padding-bottom: 10px;
+}
+
+.modern-panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--cyber-cyan);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+/* Dashboard grid layout */
+.modern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+/* Button styles */
+.modern-button {
+    background: var(--cyber-gradient-cyan);
+    color: black;
+    border: none;
+    border-radius: 2px;
+    padding: 8px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    font-family: 'Courier New', monospace;
+}
+
+.modern-button:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.modern-button.accent {
+    background: var(--cyber-gradient-magenta);
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+}
+
+.modern-button.accent:hover {
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+}
+
+/* Card design */
+.modern-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    background-color: rgba(10, 10, 10, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    padding: 15px;
+    box-shadow: var(--cyber-shadow);
+    transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    border-color: var(--cyber-cyan);
+}
+
+.modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--cyber-gradient-cyan);
+}
+
+/* Animation for elements */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulseCyan {
+    0%, 100% { box-shadow: 0 0 5px var(--cyber-cyan); }
+    50% { box-shadow: 0 0 15px var(--cyber-cyan); }
+}
+
+@keyframes glowPulseMagenta {
+    0%, 100% { box-shadow: 0 0 5px var(--cyber-magenta); }
+    50% { box-shadow: 0 0 15px var(--cyber-magenta); }
+}
+
+.modern-fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.glow-cyan {
+    animation: glowPulseCyan 2s infinite;
+}
+
+.glow-magenta {
+    animation: glowPulseMagenta 2s infinite;
+}
+
+/* Animated background elements */
+.modern-bg-element {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.modern-bg-element-1 {
+    width: 40vw;
+    height: 40vw;
+    top: -10vw;
+    right: -10vw;
+    background: var(--cyber-cyan);
+    animation: float 20s infinite alternate ease-in-out;
+}
+
+.modern-bg-element-2 {
+    width: 30vw;
+    height: 30vw;
+    bottom: -10vw;
+    left: -5vw;
+    background: var(--cyber-magenta);
+    animation: float 25s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(5%, 5%); }
+}
+
+/* Form elements */
+.modern-input {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--cyber-cyan);
+    border-radius: 2px;
+    color: white;
+    padding: 10px 15px;
+    width: 100%;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+}
+
+.modern-input:focus {
+    border-color: var(--cyber-cyan);
+    box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.3);
+    outline: none;
+}
+
+/* Badges and indicators */
+.modern-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(0, 255, 255, 0.2);
+    color: var(--cyber-cyan);
+    margin-left: 10px;
+}
+
+.modern-badge.danger {
+    background: rgba(255, 0, 255, 0.2);
+    color: var(--cyber-magenta);
+}
+
+/* Dialog animation */
+@keyframes dialogFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Notification levels */
+.notification.info {
+    border-color: var(--cyber-cyan);
+}
+
+.notification.warning {
+    border-color: #ffdf00;
+}
+
+.notification.critical {
+    border-color: var(--cyber-magenta);
+}
+
+/* Special hover effects */
+.special-hover {
+    position: relative;
+    overflow: hidden;
+}
+
+.special-hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.special-hover:hover::after {
+    left: 100%;
+}
+
+/* Terminal-style elements that can be used in the modern UI */
+.terminal-text {
+    font-family: 'Courier New', monospace;
+    color: var(--cyber-cyan);
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-left: 3px solid var(--cyber-cyan);
+    margin: 10px 0;
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-online {
+    background-color: var(--cyber-cyan);
+    box-shadow: 0 0 5px var(--cyber-cyan);
+    animation: pulse 2s infinite;
+}
+
+.status-warning {
+    background-color: #ffdf00;
+    box-shadow: 0 0 5px #ffdf00;
+}
+
+.status-error {
+    background-color: var(--cyber-magenta);
+    box-shadow: 0 0 5px var(--cyber-magenta);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--cyber-cyan);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-cyan-dark);
+}
+
+/* Tables */
+.cyber-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.cyber-table th {
+    background: rgba(0, 255, 255, 0.1);
+    color: var(--cyber-cyan);
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid var(--cyber-cyan);
+}
+
+.cyber-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.cyber-table tr:hover {
+    background: rgba(0, 255, 255, 0.05);
+}
+
+/* Theme transition effects */
+.logging-out {
+    animation: logoutModernEffect 1s forwards;
+}
+
+.theme-transition {
+    animation: themeTransitionEffect 1s forwards;
+}
+
+@keyframes logoutModernEffect {
+    0% {
+        opacity: 1;
+        filter: none;
+    }
+    20% {
+        filter: hue-rotate(90deg) brightness(1.3);
+    }
+    40% {
+        filter: contrast(1.5) hue-rotate(180deg);
+    }
+    60% {
+        filter: blur(4px) brightness(0.8) hue-rotate(270deg);
+    }
+    80% {
+        filter: saturate(3) hue-rotate(360deg) brightness(1.2);
+    }
+    90% {
+        filter: blur(10px) brightness(3);
+    }
+    100% {
+        opacity: 0;
+        filter: brightness(3);
+    }
+}
+
+@keyframes themeTransitionEffect {
+    0% {
+        filter: none;
+    }
+    20% {
+        filter: saturate(3) hue-rotate(90deg);
+    }
+    40% {
+        filter: contrast(1.5) blur(5px);
+    }
+    60% {
+        filter: hue-rotate(180deg) brightness(1.5);
+    }
+    80% {
+        filter: invert(1) hue-rotate(270deg);
+    }
+    90% {
+        filter: brightness(2) blur(10px) saturate(2);
+    }
+    100% {
+        filter: none;
+    }
+}
+
+/* Add this to the modern container for a glitchy logout effect */
+.modern-container.logging-out .modern-header,
+.modern-container.logging-out .modern-content,
+.modern-container.logging-out .modern-panel,
+.modern-container.logging-out .modern-card {
+    animation: glitchOut 0.8s forwards;
+}
+
+@keyframes glitchOut {
+    0% {
+        transform: translate(0);
+    }
+    20% {
+        transform: translate(-5px, 5px);
+    }
+    40% {
+        transform: translate(5px, -5px);
+    }
+    60% {
+        transform: translate(-3px, -3px);
+    }
+    80% {
+        transform: translate(3px, 3px);
+    }
+    100% {
+        transform: translate(0);
+    }
+}
+
+/* Staggered animation for logout effect */
+.modern-container.logging-out .modern-header {
+    animation-delay: 0s;
+}
+
+.modern-container.logging-out .modern-panel:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.modern-container.logging-out .modern-panel:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.modern-container.logging-out .modern-card {
+    animation-delay: 0.3s;
+}
+
+/* Enhance the scene transition overlay for better theme switching */
+.scene-transition-overlay.theme-switching {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+    animation: themeSwitch 1s forwards;
+}
+
+@keyframes themeSwitch {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .modern-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modern-panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .modern-header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .modern-nav {
+        margin-top: 10px;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
