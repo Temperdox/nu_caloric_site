@@ -48,14 +48,14 @@
 /* Retro resize preview line */
 .terminal-resize-preview {
     position: fixed;
-    left: 0;
-    width: 100%;
+    left: 2.5%;
+    width: 95%;
     height: 2px;
-    border-top: 2px dashed #33ff33; /* bright green dashed line */
+    border-top: 2px dashed #33ff33;
     pointer-events: none;
     z-index: 1000;
-    box-shadow: 0 0 8px #33ff33; /* green glow */
-    animation: dashAnimation 0.5s linear infinite;
+    box-shadow: 0 0 8px #33ff33;
+    display: none;
 }
 
 /* Animation for the dashed line */
@@ -71,6 +71,10 @@
 /* Customize cursor during resize */
 body.terminal-resizing {
     cursor: ns-resize !important;
+}
+
+.terminal-console-container.resizing {
+    transition: none;
 }
 
 .terminal-header-bar {
@@ -107,6 +111,8 @@ body.terminal-resizing {
 }
 
 .terminal-content-area {
+    position: relative; /* Required for absolute positioning of children */
+    max-height: 100%;
     flex: 1;
     padding: 10px;
     overflow-y: auto;
@@ -153,6 +159,10 @@ body.terminal-resizing {
     align-items: center;
     width: 100%;
     margin-top: 5px;
+    background-color: black;
+    z-index: 50;
+    position: sticky;
+    bottom: 0;
 }
 
 .terminal-prompt {
@@ -176,10 +186,15 @@ body.terminal-resizing {
 .terminal-completion {
     background-color: rgba(0, 0, 0, 0.9);
     border: 1px solid var(--border-color);
-    margin-top: 5px;
-    max-height: 150px;
+    margin-top: 13px;
+    min-height: fit-content;
     overflow-y: auto;
     z-index: 60;
+    position: relative; /* Make it position absolutely */
+    bottom: 10px; /* Position above the command line */
+    left: 0; /* Align with left margin */
+    right: 10px; /* Extend to right margin */
+    width: auto; /* Let it size based on left/right values */
 }
 
 .terminal-completion-item {

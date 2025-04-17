@@ -15,35 +15,35 @@ const siteData = [
         id: 2,
         title: 'Traxus',
         description: 'User account management and permissions overview',
-        image: '/assets/img/profile.jpg',
-        url: '/sites/profile/user'
+        image: 'src/assets/img/TRAXUS.png',
+        url: 'http://traxus.global'
     },
     {
         id: 3,
-        title: 'Midas',
+        title: 'Mida',
         description: 'View detailed system logs and security events',
-        image: '/assets/img/logs.jpg',
+        image: 'src/assets/img/MIDA.png',
         url: '/system/logs'
     },
     {
         id: 4,
         title: 'Sekaguchi Genetics',
         description: 'Comprehensive data analytics and visualization tools',
-        image: '/assets/img/analytics.jpg',
+        image: 'src/assets/img/SEKIGUCHI.png',
         url: '/tools/analytics'
     },
     {
         id: 5,
-        title: 'Lorem Ipsum',
+        title: 'UESC',
         description: 'Lorem Ipsum',
-        image: '/assets/img/monitor.jpg',
+        image: 'src/assets/img/UESC.png',
         url: '/tools/monitor'
     },
     {
         id: 6,
-        title: 'Lorem Ipsum',
+        title: 'Cyber Acme',
         description: 'Lorem Ipsum',
-        image: '/assets/img/network.jpg',
+        image: 'src/assets/img/CYAC.png',
         url: '/system/config/network'
     }
 ];

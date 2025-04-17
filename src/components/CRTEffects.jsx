@@ -19,6 +19,49 @@ const CRTEffects = () => {
     // Use refs for animation timers and state that doesn't need to trigger renders
     const animationFrameRef = useRef(null);
     const jitterTimeoutRef = useRef(null);
+    // Add a visibility tracking ref
+    const isVisibleRef = useRef(true);
+
+    // Add visibility tracking with Page Visibility API
+    useEffect(() => {
+        // Function to handle visibility changes
+        const handleVisibilityChange = () => {
+            const isVisible = document.visibilityState === 'visible';
+            isVisibleRef.current = isVisible;
+
+            // If the page becomes visible again, restart animations if needed
+            if (isVisible && !isInitialRender) {
+                // Cancel any existing animation frame to avoid duplicates
+                if (animationFrameRef.current) {
+                    cancelAnimationFrame(animationFrameRef.current);
+                }
+
+                // Restart the scanning jitter effect
+                startScanlineJitter();
+            } else if (!isVisible) {
+                // If page becomes hidden, stop animations to save resources
+                if (animationFrameRef.current) {
+                    cancelAnimationFrame(animationFrameRef.current);
+                    animationFrameRef.current = null;
+                }
+
+                if (jitterTimeoutRef.current) {
+                    clearTimeout(jitterTimeoutRef.current);
+                    jitterTimeoutRef.current = null;
+                }
+
+                // Reset scanline jitter
+                document.documentElement.style.setProperty('--scanline-jitter', '0px');
+            }
+        };
+
+        // Listen for visibility changes
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [isInitialRender]);
 
     // Separate useEffect for the initialization to run only once
     useEffect(() => {
@@ -50,6 +93,11 @@ const CRTEffects = () => {
 
         // Self-contained jitter function that doesn't need component state
         const createJitter = (time) => {
+            // Skip animation frame if page is not visible
+            if (!isVisibleRef.current) {
+                return;
+            }
+
             // Only create jitter occasionally based on time and probability
             if (time - lastJitterTime > jitterInterval && Math.random() > 0.85) {
                 lastJitterTime = time;
@@ -60,12 +108,18 @@ const CRTEffects = () => {
 
                 // Reset jitter after a short delay
                 jitterTimeoutRef.current = setTimeout(() => {
-                    document.documentElement.style.setProperty('--scanline-jitter', '0px');
+                    // Only reset if page is still visible
+                    if (isVisibleRef.current) {
+                        document.documentElement.style.setProperty('--scanline-jitter', '0px');
+                    }
                 }, 100);
             }
 
             // Continue the animation loop with reference for cleanup
-            animationFrameRef.current = requestAnimationFrame(createJitter);
+            // Only if page is visible
+            if (isVisibleRef.current) {
+                animationFrameRef.current = requestAnimationFrame(createJitter);
+            }
         };
 
         // Initial call to start the loop
@@ -94,11 +148,11 @@ const CRTEffects = () => {
     return (
         <div className="crt-container">
             <CRTOverlay className={`crt-flash ${flashingRef.current ? 'active' : ''}`} />
-            <CRTOverlay className="crt-scanlines" />
-            <CRTOverlay className="crt-vignette" />
-            <CRTOverlay className="crt-flicker" />
-            <CRTOverlay className="crt-static" />
-            <CRTOverlay className="crt-distortion" />
+            <CRTOverlay className="crt-scanlines pausable-animation" />
+            <CRTOverlay className="crt-vignette pausable-animation" />
+            <CRTOverlay className="crt-flicker pausable-animation" />
+            <CRTOverlay className="crt-static pausable-animation" />
+            <CRTOverlay className="crt-distortion pausable-animation" />
         </div>
     );
 };

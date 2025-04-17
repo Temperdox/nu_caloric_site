@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import React, {useState, useEffect, useCallback, lazy, Suspense, useRef} from 'react';
 import './assets/css/App.css';
 import './assets/css/ModernTheme.css';
 
@@ -34,6 +34,9 @@ function App() {
         useModern: false,
         showReInitDialog: false
     });
+
+    const isVisibleRef = useRef(true);
+    const [isPageVisible, setIsPageVisible] = useState(true);
 
     // Memoized scene change function
     const changeScene = useCallback((sceneName, userData = null) => {
@@ -239,6 +242,34 @@ function App() {
         startCRT();
     }, []);
 
+    useEffect(() => {
+        // Function to handle visibility changes
+        const handleVisibilityChange = () => {
+            const isVisible = document.visibilityState === 'visible';
+            isVisibleRef.current = isVisible;
+            setIsPageVisible(isVisible);
+
+            // Apply or remove a CSS class to the root element when visibility changes
+            if (isVisible) {
+                document.documentElement.classList.remove('page-hidden');
+                // Resume any global animations here
+            } else {
+                document.documentElement.classList.add('page-hidden');
+                // Pause any global animations here
+            }
+        };
+
+        // Set initial state
+        handleVisibilityChange();
+
+        // Listen for visibility changes
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
+
     // Memoized scene renderer
     const renderScene = useCallback(() => {
         if (!crtEffects.started) {
@@ -249,17 +280,17 @@ function App() {
         const sceneMap = {
             'bootup': (
                 <Suspense fallback={<LoadingFallback />}>
-                    <BootupScene onComplete={() => changeScene('login')} />
+                    <BootupScene onComplete={() => changeScene('login')} isPageVisible={isPageVisible} />
                 </Suspense>
             ),
             'login': (
                 <Suspense fallback={<LoadingFallback />}>
-                    <LoginScene onLoginSuccess={(userData) => changeScene('main', userData)} />
+                    <LoginScene onLoginSuccess={(userData) => changeScene('main', userData)} isPageVisible={isPageVisible} />
                 </Suspense>
             ),
             'main': (
                 <Suspense fallback={<LoadingFallback />}>
-                    <MainScene user={scene.userData} onLogout={handleLogout} />
+                    <MainScene user={scene.userData} onLogout={handleLogout} isPageVisible={isPageVisible} />
                 </Suspense>
             ),
             'modernMain': (
@@ -268,13 +299,14 @@ function App() {
                         user={scene.userData}
                         onLogout={handleLogout}
                         isLoggingOut={scene.isLoggingOut}
+                        isPageVisible={isPageVisible}
                     />
                 </Suspense>
             )
         };
 
         return sceneMap[scene.current] || <div>Unknown Scene</div>;
-    }, [scene, crtEffects.started, changeScene, handleLogout]);
+    }, [scene, crtEffects.started, changeScene, handleLogout, isPageVisible]);
 
     // Use a container class based on theme
     const containerClassName = theme.useModern ? 'modern-container' : 'App';

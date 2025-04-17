@@ -189,7 +189,7 @@ const BootupScene = ({ onComplete }) => {
         <div className={`bootup-scene ${isGlitching ? 'glitching' : ''}`}>
             {showHeaderFooter && (
                 <div className="terminal-header">
-                    <span className="glow-text">NuCaloric System</span>
+                    <span className="glow-text">NuCaloric Operating System</span>
                     <span>{formatTime(currentTime)}</span>
                 </div>
             )}
@@ -206,7 +206,7 @@ const BootupScene = ({ onComplete }) => {
 
             {showHeaderFooter && (
                 <div className="terminal-footer">
-                    <span className="glow-text">Tech Industries</span>
+                    <span className="glow-text">Sponsored by CyAc</span>
                     <span>v3.2.1</span>
                 </div>
             )}

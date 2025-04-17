@@ -8,6 +8,45 @@
   --scanline-jitter: 0px;
 }
 
+.page-hidden .pausable-animation {
+  animation-play-state: paused !important;
+}
+
+.page-hidden .crt-scanlines,
+.page-hidden .crt-flicker,
+.page-hidden .crt-static,
+.page-hidden .terminal-cursor,
+.page-hidden .glitch-bands > div,
+.page-hidden .glow-text,
+.page-hidden .containerPulse,
+.page-hidden .blink,
+.page-hidden .criticalPulse,
+.page-hidden .modern-bg-element,
+.page-hidden .glow-cyan,
+.page-hidden .glow-magenta {
+  animation-play-state: paused !important;
+}
+
+.pausable-animation {
+  animation-play-state: running;
+}
+
+/* Utility class to help with JavaScript visibility control */
+.visibility-hidden {
+  visibility: hidden;
+}
+
+/* Improve performance by disabling some effects when tab is inactive */
+.page-hidden .crt-container {
+  /* Reduce overhead of overlay effects when tab is hidden */
+  opacity: 0.5;
+}
+
+/* Reduce animations when tab is inactive to save CPU/battery */
+.page-hidden {
+  --animation-reduction: 1;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -603,7 +642,7 @@ body {
 
 @keyframes moveScanlines {
   0% { background-position: 0 0; }
-  100% { background-position: 0 100px; }
+  100% { background-position: 0 calc(100px * var(--animation-reduction, 1));  }
 }
 
 @keyframes crtTurnOn {

@@ -1,6 +1,6 @@
 // MainScene.jsx - Updated with SiteDirectory integration
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
-import TerminalConsole from '../TerminalConsole.jsx';
+import TerminalConsole from '../terminal/TerminalConsole.jsx';
 import SiteDirectory from './sub_scenes/SiteDirectory.jsx';
 import '../../assets/css/TerminalConsole.css';
 import '../../assets/css/SiteDirectory.css';
@@ -55,11 +55,10 @@ const MainScene = ({ user, onLogout }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [randomGlitches, setRandomGlitches] = useState(false);
     const [terminalHeight, setTerminalHeight] = useState(200); // Initial terminal height
-    const [showSiteDirectory, setShowSiteDirectory] = useState(false);
+    const [, setShowSiteDirectory] = useState(false);
     const [activeSubScene, setActiveSubScene] = useState(null);
-
-    const inputRef = useRef(null);
-    const terminalRef = useRef(null);
+    useRef(null);
+    useRef(null);
     const subSceneRef = useRef(null);
 
     // Update time every second
@@ -117,18 +116,63 @@ const MainScene = ({ user, onLogout }) => {
     const startTerminalResize = useCallback((e) => {
         e.preventDefault();
 
+        // Add a CSS class to indicate we're resizing
+        document.body.classList.add('terminal-resizing');
+
+        // Add a class to the terminal to disable transitions during resize
+        const terminal = document.querySelector('.terminal-console-container');
+        if (terminal) {
+            terminal.classList.add('resizing');
+        }
+
+        // Create a resize preview line if it doesn't exist
+        let previewLine = document.querySelector('.terminal-resize-preview');
+        if (!previewLine) {
+            previewLine = document.createElement('div');
+            previewLine.className = 'terminal-resize-preview';
+            document.body.appendChild(previewLine);
+        }
+
+        // Set initial position of preview line
+        previewLine.style.top = `${e.clientY}px`;
+        previewLine.style.display = 'block';
+
         const startY = e.clientY;
         const startHeight = terminalHeight;
 
+        // Store the last resize time for throttling
+        let lastResizeTime = performance.now();
+
         const doDrag = (e) => {
-            // Calculate new height based on mouse movement (inverse since we're dragging up)
-            const newHeight = Math.max(100, startHeight + (startY - e.clientY));
-            setTerminalHeight(newHeight);
+            // Update preview line position on every mouse move (lightweight operation)
+            previewLine.style.top = `${e.clientY}px`;
+
+            // Throttle the actual resize calculations
+            const now = performance.now();
+            if (now - lastResizeTime > 16) { // ~60fps
+                lastResizeTime = now;
+
+                // Calculate new height based on mouse movement (inverse since we're dragging up)
+                const newHeight = Math.max(100, startHeight + (startY - e.clientY));
+
+                // Update the terminal height (this causes reflow)
+                setTerminalHeight(newHeight);
+            }
         };
 
         const stopDrag = () => {
+            // Clean up on mouse release
             document.removeEventListener('mousemove', doDrag);
             document.removeEventListener('mouseup', stopDrag);
+
+            // Remove the resize indicator and preview
+            document.body.classList.remove('terminal-resizing');
+            if (terminal) {
+                terminal.classList.remove('resizing');
+            }
+            if (previewLine) {
+                previewLine.style.display = 'none';
+            }
         };
 
         document.addEventListener('mousemove', doDrag);
