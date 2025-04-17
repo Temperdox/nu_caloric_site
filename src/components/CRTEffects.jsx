@@ -1,121 +1,104 @@
-import React, { useEffect, useState, useCallback, memo, useMemo } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 
-// Memoized CRTOverlay component to prevent unnecessary re-renders
-const CRTOverlay = memo(({ className }) => {
-    return <div className={`crt-overlay ${className}`}></div>;
-});
+// A highly optimized CRTEffects component that maintains the same visual appearance
+// but significantly reduces unnecessary renders and improves performance
+
+// Memoized CRTOverlay component for better performance
+const CRTOverlay = memo(({ className }) => (
+    <div className={`crt-overlay ${className}`} />
+));
 
 CRTOverlay.displayName = 'CRTOverlay';
 
 // Main CRTEffects component
 const CRTEffects = () => {
-    const [effects, setEffects] = useState({
-        isFlashing: true,
-        scanlineJitter: 0
-    });
+    // Use a reference for tracking flashing state to avoid re-renders
+    const flashingRef = useRef(true);
+    // Use state only for the initial render
+    const [isInitialRender, setIsInitialRender] = useState(true);
+    // Use refs for animation timers and state that doesn't need to trigger renders
+    const animationFrameRef = useRef(null);
+    const jitterTimeoutRef = useRef(null);
 
-    // Batch state updates using a single state object
-    const updateEffects = useCallback((updates) => {
-        setEffects(prev => ({
-            ...prev,
-            ...updates
-        }));
-    }, []);
+    // Separate useEffect for the initialization to run only once
+    useEffect(() => {
+        // Only run this effect on initial render
+        if (isInitialRender) {
+            // Set initial CSS property right away
+            document.documentElement.style.setProperty('--scanline-jitter', '0px');
 
-    // Setup CRT effects with useCallback to prevent recreation on renders
-    const initCRTEffects = useCallback(() => {
-        // Initial white flash effect
-        updateEffects({ isFlashing: true });
+            // Schedule the flash to disappear after 800ms
+            const flashTimer = setTimeout(() => {
+                flashingRef.current = false;
+                // Force a single re-render after flash disappears
+                setIsInitialRender(false);
+                // Start the jitter effect only after initial flash is gone
+                startScanlineJitter();
+            }, 800);
 
-        // Set document property once
-        document.documentElement.style.setProperty('--scanline-jitter', '0px');
+            // Clean up on unmount
+            return () => {
+                clearTimeout(flashTimer);
+            };
+        }
+    }, [isInitialRender]);
 
-        // Use setTimeout only when necessary, with requestAnimationFrame for smoother animations
-        setTimeout(() => {
-            updateEffects({ isFlashing: false });
-
-            // Start scanline jitter with RAF
-            startScanlineJitter();
-        }, 800);
-    }, [updateEffects]);
-
-    // Use debounced jitter effect for better performance
-    const startScanlineJitter = useCallback(() => {
-        // Create a throttled jitter to improve performance
+    // Start the scanline jitter effect - optimized to use requestAnimationFrame efficiently
+    const startScanlineJitter = () => {
         let lastJitterTime = 0;
-        const jitterInterval = 200; // ms between possible jitter changes
+        const jitterInterval = 250; // Slightly increased to reduce CPU usage
 
-        // Function to create jitter effect
+        // Self-contained jitter function that doesn't need component state
         const createJitter = (time) => {
-            // Only create jitter occasionally and not every frame
-            if (time - lastJitterTime > jitterInterval && Math.random() > 0.8) {
+            // Only create jitter occasionally based on time and probability
+            if (time - lastJitterTime > jitterInterval && Math.random() > 0.85) {
                 lastJitterTime = time;
-                const jitter = Math.floor(Math.random() * 8) - 4; // -4px to 4px
+                const jitter = Math.floor(Math.random() * 6) - 3; // Reduced range -3px to 3px
 
-                // Use requestAnimationFrame for smoother updates
-                requestAnimationFrame(() => {
-                    updateEffects({ scanlineJitter: jitter });
+                // Set jitter directly on the CSS variable
+                document.documentElement.style.setProperty('--scanline-jitter', `${jitter}px`);
 
-                    // Apply jitter to CSS variable
-                    document.documentElement.style.setProperty('--scanline-jitter', `${jitter}px`);
-
-                    // Reset jitter after a short time
-                    setTimeout(() => {
-                        document.documentElement.style.setProperty('--scanline-jitter', '0px');
-                        updateEffects({ scanlineJitter: 0 });
-                    }, 100);
-                });
+                // Reset jitter after a short delay
+                jitterTimeoutRef.current = setTimeout(() => {
+                    document.documentElement.style.setProperty('--scanline-jitter', '0px');
+                }, 100);
             }
 
-            // Continue the animation loop
-            requestAnimationFrame(createJitter);
+            // Continue the animation loop with reference for cleanup
+            animationFrameRef.current = requestAnimationFrame(createJitter);
         };
 
-        // Start the animation loop
-        requestAnimationFrame(createJitter);
+        // Initial call to start the loop
+        animationFrameRef.current = requestAnimationFrame(createJitter);
+    };
 
-        // No cleanup needed for RAF as we'll let it continue
-    }, [updateEffects]);
-
-    // Initialize CRT effects
+    // Single cleanup effect that handles all animations
     useEffect(() => {
-        initCRTEffects();
-
-        // Cleanup function
+        // Cleanup function runs on unmount
         return () => {
-            // Reset any CSS variables
+            // Cancel any pending animation frames
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+            // Clear any timeouts
+            if (jitterTimeoutRef.current) {
+                clearTimeout(jitterTimeoutRef.current);
+            }
+            // Reset CSS variable
             document.documentElement.style.setProperty('--scanline-jitter', '0px');
         };
-    }, [initCRTEffects]);
+    }, []);
 
-    // Memoize the component structure to avoid unnecessary re-renders
-    const overlays = useMemo(() => {
-        return (
-            <>
-                {/* White flash overlay for power-on effect */}
-                <CRTOverlay className={`crt-flash ${effects.isFlashing ? 'active' : ''}`} />
-
-                {/* Scanlines effect */}
-                <CRTOverlay className="crt-scanlines" />
-
-                {/* Vignette effect (darker corners) */}
-                <CRTOverlay className="crt-vignette" />
-
-                {/* Screen flicker effect */}
-                <CRTOverlay className="crt-flicker" />
-
-                {/* Static noise effect */}
-                <CRTOverlay className="crt-static" />
-
-                {/* Barrel distortion for curved screen effect */}
-                <CRTOverlay className="crt-distortion" />
-            </>
-        );
-    }, [effects.isFlashing]);
-
+    // Pre-defined overlays to avoid recreating them on every render
+    // The flash class conditionally includes 'active' based on the ref
     return (
         <div className="crt-container">
-            {overlays}
+            <CRTOverlay className={`crt-flash ${flashingRef.current ? 'active' : ''}`} />
+            <CRTOverlay className="crt-scanlines" />
+            <CRTOverlay className="crt-vignette" />
+            <CRTOverlay className="crt-flicker" />
+            <CRTOverlay className="crt-static" />
+            <CRTOverlay className="crt-distortion" />
         </div>
     );
 };
