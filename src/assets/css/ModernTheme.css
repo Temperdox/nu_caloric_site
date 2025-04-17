@@ -1,4 +1,4 @@
-/* CyberpunkTheme.css - Styling based on cyan, magenta and black */
+/* Modern Theme CSS - Updated with navigation system and SiteDirectory support */
 
 :root {
     /* Base colors from specified palette */
@@ -46,17 +46,23 @@
     z-index: 2;
 }
 
-/* Header bar */
-.modern-header {
+/* Header with top section for logo and toggle */
+.modern-header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+}
+
+/* Header bar */
+.modern-header {
+    display: flex;
+    flex-direction: column;
     padding: 15px 25px;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--cyber-cyan);
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-    height: 60px;
     position: relative;
     z-index: 10;
 }
@@ -72,7 +78,31 @@
     text-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
 }
 
-.modern-nav {
+/* Mobile navigation toggle */
+.modern-nav-toggle {
+    display: none; /* Hidden by default, shown on mobile */
+    background: transparent;
+    border: none;
+    color: var(--cyber-cyan);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modern-nav-toggle:hover {
+    text-shadow: 0 0 8px var(--cyber-cyan);
+}
+
+/* Navigation container for multi-level nav */
+.modern-nav-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+/* Main navigation styling */
+.modern-main-nav {
     display: flex;
     gap: 20px;
 }
@@ -84,6 +114,10 @@
     position: relative;
     padding: 5px 10px;
     transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
 }
 
 .modern-nav-item:hover {
@@ -114,60 +148,101 @@
     width: 100%;
 }
 
-/* Fix for navigation buttons - ensure they work as buttons, not links */
-.modern-nav button.modern-nav-item {
-    background: transparent;
-    border: none;
-    color: var(--cyber-text);
-    text-decoration: none;
-    font-weight: 500;
-    position: relative;
-    padding: 5px 10px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-}
-
-.modern-nav button.modern-nav-item:hover {
-    color: var(--cyber-cyan);
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
-}
-
-.modern-nav button.modern-nav-item::after {
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--cyber-gradient-cyan);
-    transition: width 0.3s ease;
-}
-
-.modern-nav button.modern-nav-item:hover::after {
-    width: 100%;
-}
-
-.modern-nav button.modern-nav-item.active {
-    color: var(--cyber-cyan);
-}
-
-.modern-nav button.modern-nav-item.active::after {
-    width: 100%;
-}
-
 /* Logout button specific styling */
-.modern-nav button.logout-btn {
+.modern-nav-item.logout-btn {
     color: var(--cyber-magenta);
 }
 
-.modern-nav button.logout-btn:hover {
+.modern-nav-item.logout-btn:hover {
     color: var(--cyber-magenta);
     text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
 }
 
-.modern-nav button.logout-btn::after {
+.modern-nav-item.logout-btn::after {
     background: var(--cyber-gradient-magenta);
+}
+
+/* Sub navigation styling */
+.modern-sub-nav {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.modern-subnav-item {
+    background: transparent;
+    border: none;
+    color: var(--cyber-text);
+    padding: 5px 15px;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 400;
+    font-size: 14px;
+    opacity: 0.8;
+    font-family: 'Courier New', monospace;
+}
+
+.modern-subnav-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--cyber-gradient-cyan);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.modern-subnav-item:hover {
+    color: var(--cyber-cyan);
+    opacity: 1;
+}
+
+.modern-subnav-item:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.modern-subnav-item.active {
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 3px var(--cyber-cyan);
+    opacity: 1;
+}
+
+.modern-subnav-item.active::before {
+    transform: scaleX(1);
+}
+
+/* Breadcrumb navigation */
+.modern-breadcrumbs {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--cyber-text-dim);
+}
+
+.breadcrumb-item {
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-item:last-child {
+    color: var(--cyber-cyan);
+    opacity: 1;
+}
+
+.breadcrumb-separator {
+    margin: 0 8px;
+    opacity: 0.5;
 }
 
 /* Main content area */
@@ -176,6 +251,7 @@
     padding: 20px;
     display: flex;
     overflow-y: auto;
+    z-index: 5;
 }
 
 /* Dashboard panels */
@@ -187,6 +263,7 @@
     padding: 20px;
     margin-bottom: 20px;
     backdrop-filter: blur(5px);
+    width: 100%;
 }
 
 .modern-panel-header {
@@ -271,6 +348,124 @@
     background: var(--cyber-gradient-cyan);
 }
 
+/* SiteDirectory ModernCard Styling */
+/* Site Directory Modern Styles */
+.site-directory.modern {
+    width: 100%;
+    padding: 20px 0;
+}
+
+.site-directory.modern .site-directory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.modern-card-image-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.modern-card-image {
+    width: 110%;
+    height: 110%;
+    object-fit: cover;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-origin: center;
+}
+
+.modern-site-card {
+    position: relative;
+    height: 200px;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.modern-site-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--cyber-cyan), var(--cyber-magenta));
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 0.5s ease;
+    mix-blend-mode: overlay;
+}
+
+.modern-site-card:hover::before {
+    opacity: 0.5;
+}
+
+.modern-site-card.hovered .modern-card-image {
+    filter: blur(3px) brightness(0.6);
+}
+
+.modern-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    text-align: center;
+    z-index: 2;
+    transform: translateY(20px);
+}
+
+.modern-site-card.hovered .modern-card-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.modern-card-title {
+    color: var(--cyber-cyan);
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px var(--cyber-cyan);
+    transform: translateZ(50px);
+}
+
+.modern-card-description {
+    color: var(--cyber-text-dim);
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    max-width: 90%;
+    transform: translateZ(40px);
+}
+
+.modern-card-button {
+    background: var(--cyber-gradient-cyan);
+    color: black;
+    border: none;
+    border-radius: 2px;
+    padding: 8px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    transform: translateZ(60px);
+}
+
+.modern-card-button:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
 /* Animation for elements */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -331,91 +526,31 @@
     100% { transform: translate(5%, 5%); }
 }
 
-/* Form elements */
-.modern-input {
-    background-color: rgba(0, 0, 0, 0.7);
-    border: 1px solid var(--cyber-cyan);
-    border-radius: 2px;
-    color: white;
-    padding: 10px 15px;
-    width: 100%;
-    transition: all 0.3s ease;
-    font-family: 'Courier New', monospace;
-}
-
-.modern-input:focus {
-    border-color: var(--cyber-cyan);
-    box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.3);
-    outline: none;
-}
-
-/* Badges and indicators */
-.modern-badge {
-    display: inline-flex;
+/* Placeholder for upcoming features */
+.modern-placeholder {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4px 8px;
-    border-radius: 2px;
-    font-size: 12px;
-    font-weight: 500;
-    background: rgba(0, 255, 255, 0.2);
-    color: var(--cyber-cyan);
-    margin-left: 10px;
-}
-
-.modern-badge.danger {
-    background: rgba(255, 0, 255, 0.2);
-    color: var(--cyber-magenta);
-}
-
-/* Dialog animation */
-@keyframes dialogFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Notification levels */
-.notification.info {
-    border-color: var(--cyber-cyan);
-}
-
-.notification.warning {
-    border-color: #ffdf00;
-}
-
-.notification.critical {
-    border-color: var(--cyber-magenta);
-}
-
-/* Special hover effects */
-.special-hover {
-    position: relative;
-    overflow: hidden;
-}
-
-.special-hover::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
+    height: 300px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--cyber-cyan);
+    border-radius: 4px;
+    padding: 40px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    margin: 20px 0;
     width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
 }
 
-.special-hover:hover::after {
-    left: 100%;
-}
-
-/* Terminal-style elements that can be used in the modern UI */
-.terminal-text {
-    font-family: 'Courier New', monospace;
+.modern-placeholder h3 {
     color: var(--cyber-cyan);
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-left: 3px solid var(--cyber-cyan);
-    margin: 10px 0;
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px var(--cyber-cyan);
+}
+
+.modern-placeholder p {
+    color: var(--cyber-text-dim);
 }
 
 /* Status indicators */
@@ -448,23 +583,25 @@
     50% { opacity: 0.5; }
 }
 
-/* Scrollbars */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+/* Special hover effects */
+.special-hover {
+    position: relative;
+    overflow: hidden;
 }
 
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.3);
+.special-hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--cyber-cyan);
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--cyber-cyan-dark);
+.special-hover:hover::after {
+    left: 100%;
 }
 
 /* Tables */
@@ -491,15 +628,65 @@
     background: rgba(0, 255, 255, 0.05);
 }
 
+/* Terminal-style elements that can be used in the modern UI */
+.terminal-text {
+    font-family: 'Courier New', monospace;
+    color: var(--cyber-cyan);
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-left: 3px solid var(--cyber-cyan);
+    margin: 10px 0;
+}
+
 /* Theme transition effects */
 .logging-out {
     animation: logoutModernEffect 1s forwards;
 }
 
-.theme-transition {
-    animation: themeTransitionEffect 1s forwards;
+/* Badge and indicator styling */
+.modern-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(0, 255, 255, 0.2);
+    color: var(--cyber-cyan);
+    margin-left: 10px;
 }
 
+.modern-badge.danger {
+    background: rgba(255, 0, 255, 0.2);
+    color: var(--cyber-magenta);
+}
+
+.modern-badge.secondary {
+    background: rgba(150, 150, 150, 0.2);
+    color: var(--cyber-text-dim);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--cyber-cyan);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-cyan-dark);
+}
+
+/* Animations for transitions and effects */
 @keyframes logoutModernEffect {
     0% {
         opacity: 1;
@@ -616,8 +803,17 @@
 
 /* Responsive design for smaller screens */
 @media (max-width: 768px) {
+    .modern-header {
+        padding: 10px 15px;
+    }
+
+    .modern-nav-toggle {
+        display: block;
+    }
+
     .modern-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
 
     .modern-panel-header {
@@ -626,15 +822,70 @@
         gap: 10px;
     }
 
-    .modern-header {
-        flex-direction: column;
-        height: auto;
-        padding: 10px;
+    .modern-main-nav,
+    .modern-sub-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
     }
 
-    .modern-nav {
-        margin-top: 10px;
-        width: 100%;
-        justify-content: space-between;
+    .modern-nav-item,
+    .modern-subnav-item {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+
+    .modern-breadcrumbs {
+        display: none; /* Hide breadcrumbs on small screens */
+    }
+
+    .modern-content {
+        padding: 15px;
+    }
+
+    /* Hidden by default on mobile - show when toggled */
+    .modern-nav-container:not(.expanded) .modern-main-nav,
+    .modern-nav-container:not(.expanded) .modern-sub-nav {
+        display: none;
+    }
+
+    .modern-nav-container.expanded .modern-main-nav,
+    .modern-nav-container.expanded .modern-sub-nav {
+        display: flex;
+        animation: navSlideIn 0.3s ease forwards;
+    }
+
+    @keyframes navSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .site-directory.modern .site-directory-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modern-site-card {
+        height: 180px;
+    }
+}
+
+/* Large screens optimization */
+@media (min-width: 1200px) {
+    .modern-main-nav {
+        gap: 30px;
+    }
+
+    .modern-nav-item {
+        padding: 8px 20px;
+    }
+
+    .modern-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     }
 }

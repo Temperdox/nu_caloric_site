@@ -1,0 +1,294 @@
+/* SiteDirectory.css - Styling for both retro and modern card views */
+
+/* Common styles for the directory container */
+.site-directory {
+    width: 100%;
+    padding: 20px;
+}
+
+.site-directory-grid {
+    display: grid;
+    gap: 25px;
+    padding: 20px 0;
+}
+
+/* Retro styles */
+.site-directory.retro .site-directory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.retro-header h2 {
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px var(--text-color);
+    animation: textGlow 2s infinite;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.retro-header p {
+    color: #aaa;
+    font-family: 'Courier New', monospace;
+    margin-top: 5px;
+}
+
+/* Retro card styling */
+.retro-site-card {
+    position: relative;
+    height: 180px;
+    border: 1px solid var(--border-color);
+    background-color: #000;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 5px rgba(51, 255, 51, 0.3);
+    z-index: 1;
+}
+
+.retro-card-shadow {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 10px;
+    background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.6) 0%, rgba(51, 255, 51, 0) 70%);
+    z-index: -1;
+    transition: all 0.3s ease;
+    filter: blur(5px);
+}
+
+.retro-site-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(51, 255, 51, 0.7);
+}
+
+.retro-site-card:hover .retro-card-shadow {
+    width: 90%;
+    height: 15px;
+    filter: blur(10px);
+    opacity: 0.8;
+}
+
+.retro-card-image-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.retro-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+}
+
+.retro-site-card.hovered .retro-card-image {
+    filter: blur(3px) brightness(0.4);
+    transform: scale(1.05);
+}
+
+.retro-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-align: center;
+}
+
+.retro-site-card.hovered .retro-card-overlay {
+    opacity: 1;
+}
+
+.retro-card-title {
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px var(--text-color);
+}
+
+.retro-card-description {
+    color: #aaa;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    max-height: 60px;
+    overflow: hidden;
+}
+
+.retro-card-button {
+    background-color: transparent;
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    padding: 5px 15px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retro-card-button:hover {
+    background-color: var(--text-color);
+    color: #000;
+}
+
+/* Retro glitch effect */
+.retro-site-card.glitching {
+    animation: cardGlitch 0.3s ease;
+}
+
+@keyframes cardGlitch {
+    0% { transform: translate(0); filter: none; }
+    20% { transform: translate(-4px, 4px); filter: hue-rotate(90deg) contrast(150%); }
+    40% { transform: translate(4px, -4px); filter: hue-rotate(180deg) saturate(200%); }
+    60% { transform: translate(-4px, -4px); filter: hue-rotate(270deg) contrast(150%); }
+    80% { transform: translate(4px, 4px); filter: hue-rotate(0deg) saturate(200%); }
+    100% { transform: translate(0); filter: none; }
+}
+
+/* Modern styles */
+.site-directory.modern .site-directory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.modern-header h2 {
+    color: var(--cyber-cyan);
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px var(--cyber-cyan);
+    border-bottom: 1px solid var(--cyber-cyan);
+    padding-bottom: 10px;
+}
+
+.modern-header p {
+    color: var(--cyber-text-dim);
+    margin-top: 5px;
+}
+
+/* Modern card styling */
+.modern-site-card {
+    position: relative;
+    height: 200px;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.modern-site-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--cyber-cyan), var(--cyber-magenta));
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 0.5s ease;
+    mix-blend-mode: overlay;
+}
+
+.modern-site-card:hover::before {
+    opacity: 0.5;
+}
+
+.modern-card-image-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.modern-card-image {
+    width: 110%;
+    height: 110%;
+    object-fit: cover;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-origin: center;
+}
+
+.modern-site-card.hovered .modern-card-image {
+    filter: blur(3px) brightness(0.6);
+}
+
+.modern-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    text-align: center;
+    z-index: 2;
+    transform: translateY(20px);
+}
+
+.modern-site-card.hovered .modern-card-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.modern-card-title {
+    color: var(--cyber-cyan);
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px var(--cyber-cyan);
+    transform: translateZ(50px);
+}
+
+.modern-card-description {
+    color: var(--cyber-text-dim);
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    max-width: 90%;
+    transform: translateZ(40px);
+}
+
+.modern-card-button {
+    background: var(--cyber-gradient-cyan);
+    color: black;
+    border: none;
+    border-radius: 2px;
+    padding: 8px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    transform: translateZ(60px);
+}
+
+.modern-card-button:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .site-directory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 15px;
+    }
+
+    .retro-site-card,
+    .modern-site-card {
+        height: 160px;
+    }
+}

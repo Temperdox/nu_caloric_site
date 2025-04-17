@@ -1,5 +1,7 @@
-// ModernMainScene.jsx - Updated with improved logout handling
+// ModernMainScene.jsx - Updated with improved navigation and SiteDirectory integration
 import React, { useState, useEffect, useCallback } from 'react';
+import SiteDirectory from './sub_scenes/SiteDirectory';
+import '../../assets/css/SiteDirectorySub.css';
 
 // Sample data for metrics and notifications
 const dashboardData = [
@@ -19,10 +21,27 @@ const systemNotifications = [
     { id: 5, level: 'info', message: 'Automated backup complete - Storage utilization at 37%', time: '15:45:01' },
 ];
 
+// Sample site data for favorites section
+const favoriteSites = [
+    { id: 1, title: 'Dashboard', description: 'Main system dashboard', url: '/sites/dashboard/main', priority: 'high' },
+    { id: 2, title: 'User Profile', description: 'Account settings', url: '/sites/profile/user', priority: 'medium' },
+    { id: 3, title: 'Analytics', description: 'System analytics', url: '/tools/analytics', priority: 'medium' },
+];
+
 const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
+    // State for time and animations
     const [, setCurrentTime] = useState(new Date());
-    const [activeTab, setActiveTab] = useState('dashboard');
     const [showElements, setShowElements] = useState(false);
+
+    // State for navigation
+    const [navigation, setNavigation] = useState({
+        activeSection: 'dashboard',
+        activeSub: null,
+        breadcrumbs: ['Dashboard']
+    });
+
+    // State for mobile navigation
+    const [isMobileNavExpanded, setIsMobileNavExpanded] = useState(false);
 
     // Update time every second
     useEffect(() => {
@@ -37,6 +56,46 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
 
         return () => clearInterval(timer);
     }, []);
+
+    // Handle window resizing for mobile navigation
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth > 768 && isMobileNavExpanded) {
+                setIsMobileNavExpanded(false);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isMobileNavExpanded]);
+
+    // Click outside handler to close mobile navigation
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            const navContainer = document.querySelector('.modern-nav-container');
+            const navToggle = document.querySelector('.modern-nav-toggle');
+
+            if (
+                isMobileNavExpanded &&
+                navContainer &&
+                !navContainer.contains(event.target) &&
+                navToggle &&
+                !navToggle.contains(event.target)
+            ) {
+                setIsMobileNavExpanded(false);
+            }
+        };
+
+        if (isMobileNavExpanded) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isMobileNavExpanded]);
 
     // Format date for display
     const formatDate = useCallback((date) => {
@@ -65,13 +124,140 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
         }
     }, [onLogout]);
 
-    // Handle tab changes
-    const handleTabChange = useCallback((tab, e) => {
-        e.preventDefault();
-        setActiveTab(tab);
+    // Toggle mobile navigation
+    const toggleMobileNav = useCallback(() => {
+        setIsMobileNavExpanded(prev => !prev);
     }, []);
 
-    // Render metric cards with cyberpunk styling
+    // Handle main navigation changes
+    const handleMainNavChange = useCallback((section) => {
+        let newBreadcrumbs = ['Dashboard'];
+        let newSubSection = null;
+
+        switch (section) {
+            case 'dashboard':
+                newBreadcrumbs = ['Dashboard'];
+                break;
+            case 'sites':
+                newBreadcrumbs = ['Sites'];
+                newSubSection = 'directory'; // Default sub-section
+                break;
+            case 'tools':
+                newBreadcrumbs = ['Tools'];
+                newSubSection = 'analytics'; // Default sub-section
+                break;
+            case 'system':
+                newBreadcrumbs = ['System'];
+                newSubSection = 'config'; // Default sub-section
+                break;
+            default:
+                break;
+        }
+
+        setNavigation({
+            activeSection: section,
+            activeSub: newSubSection,
+            breadcrumbs: newBreadcrumbs
+        });
+
+        // Close mobile navigation if it's open
+        if (isMobileNavExpanded) {
+            setIsMobileNavExpanded(false);
+        }
+    }, [isMobileNavExpanded]);
+
+    // Handle sub-navigation changes
+    const handleSubNavChange = useCallback((subSection) => {
+        setNavigation(prev => {
+            // Create new breadcrumbs based on section and subsection
+            let newBreadcrumbs = [capitalize(prev.activeSection)];
+
+            // Add subsection to breadcrumbs with proper formatting
+            switch (subSection) {
+                case 'directory':
+                    newBreadcrumbs = ['Sites', 'Directory'];
+                    break;
+                case 'favorites':
+                    newBreadcrumbs = ['Sites', 'Favorites'];
+                    break;
+                case 'recent':
+                    newBreadcrumbs = ['Sites', 'Recently Viewed'];
+                    break;
+                case 'analytics':
+                    newBreadcrumbs = ['Tools', 'Analytics'];
+                    break;
+                case 'monitor':
+                    newBreadcrumbs = ['Tools', 'Resource Monitor'];
+                    break;
+                case 'reports':
+                    newBreadcrumbs = ['Tools', 'Reports'];
+                    break;
+                case 'config':
+                    newBreadcrumbs = ['System', 'Configuration'];
+                    break;
+                case 'users':
+                    newBreadcrumbs = ['System', 'User Management'];
+                    break;
+                case 'security':
+                    newBreadcrumbs = ['System', 'Security Settings'];
+                    break;
+                default:
+                    newBreadcrumbs = [capitalize(prev.activeSection), capitalize(subSection)];
+                    break;
+            }
+
+            return {
+                ...prev,
+                activeSub: subSection,
+                breadcrumbs: newBreadcrumbs
+            };
+        });
+
+        // Close mobile navigation if it's open
+        if (isMobileNavExpanded) {
+            setIsMobileNavExpanded(false);
+        }
+    }, [isMobileNavExpanded]);
+
+    // Capitalize first letter of a string (helper function)
+    const capitalize = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
+    // Handle site navigation from SiteDirectory component
+    const handleSiteNavigation = useCallback((url) => {
+        // Parse the URL to determine what to do
+        if (url.startsWith('/sites/')) {
+            // It's a site navigation
+            const parts = url.split('/');
+            if (parts.length >= 3) {
+                const scene = parts[2];
+                const tab = parts[3] || null;
+
+                console.log(`Navigate to: scene=${scene}, tab=${tab}`);
+                // Implement actual navigation if needed
+            }
+        } else if (url.startsWith('/tools/')) {
+            // Handle tools navigation
+            const tool = url.split('/')[2];
+            handleMainNavChange('tools');
+            if (tool) {
+                handleSubNavChange(tool);
+            }
+        } else if (url.startsWith('/system/')) {
+            // Handle system navigation
+            const section = url.split('/')[2];
+            handleMainNavChange('system');
+            if (section) {
+                handleSubNavChange(section);
+            }
+        } else {
+            console.log(`Navigate to: ${url}`);
+            // Handle other navigation as needed
+        }
+    }, [handleMainNavChange, handleSubNavChange]);
+
+    // Render dashboard metrics
     const renderMetricCard = useCallback((metric, index) => (
         <div
             className="modern-card modern-fade-in special-hover"
@@ -98,7 +284,29 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
         </div>
     ), []);
 
-    // Render the dashboard tab
+    // Render favorites list
+    const renderFavorite = useCallback((site, index) => (
+        <div
+            className="modern-card modern-fade-in special-hover"
+            style={{ animationDelay: `${index * 0.1}s` }}
+            key={site.id}
+            onClick={() => handleSiteNavigation(site.url)}
+        >
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span style={{
+                    fontSize: '18px',
+                    fontWeight: '600',
+                    color: site.priority === 'high' ? 'var(--cyber-cyan)' : 'var(--cyber-text)'
+                }}>{site.title}</span>
+                <div className={`modern-badge ${site.priority === 'high' ? '' : 'secondary'}`}>
+                    {site.priority === 'high' ? 'Pinned' : 'Favorite'}
+                </div>
+            </div>
+            <p style={{ color: 'var(--cyber-text-dim)' }}>{site.description}</p>
+        </div>
+    ), [handleSiteNavigation]);
+
+    // Render the dashboard content
     const renderDashboard = useCallback(() => (
         <div className="modern-fade-in" style={{ width: '100%' }}>
             <div className="modern-panel glow-cyan" style={{ marginBottom: '20px' }}>
@@ -165,8 +373,8 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
         </div>
     ), [renderMetricCard]);
 
-    // Render user profile tab
-    const renderProfile = useCallback(() => (
+    // Render user profile content
+    useCallback(() => (
         <div className="modern-fade-in" style={{ width: '100%' }}>
             <div className="modern-panel glow-magenta">
                 <div className="modern-panel-header">
@@ -248,44 +456,232 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
             </div>
         </div>
     ), [user, formatDate, formatTime]);
+// Render sites directory content
+    const renderSiteDirectory = useCallback(() => (
+        <div className="modern-fade-in" style={{ width: '100%' }}>
+            <SiteDirectory isModern={true} onNavigate={handleSiteNavigation} />
+        </div>
+    ), [handleSiteNavigation]);
 
-    // Render content based on active tab
+    // Render favorites content
+    const renderFavorites = useCallback(() => (
+        <div className="modern-fade-in" style={{ width: '100%' }}>
+            <div className="modern-panel glow-cyan">
+                <div className="modern-panel-header">
+                    <div className="modern-panel-title">
+                        <span>⭐</span>Favorite Sites
+                    </div>
+                    <button className="modern-button">Manage Favorites</button>
+                </div>
+                <div className="modern-grid">
+                    {favoriteSites.map((site, index) => renderFavorite(site, index))}
+                </div>
+            </div>
+        </div>
+    ), [renderFavorite]);
+
+    // Render the placeholder for upcoming features
+    const renderPlaceholder = useCallback((title, message = "This feature is coming soon") => (
+        <div className="modern-fade-in" style={{ width: '100%' }}>
+            <div className="modern-placeholder">
+                <h3>{title}</h3>
+                <p>{message}</p>
+            </div>
+        </div>
+    ), []);
+
+    // Render content based on navigation state
     const renderContent = useCallback(() => {
-        switch (activeTab) {
+        // Primary section routing
+        switch (navigation.activeSection) {
             case 'dashboard':
                 return renderDashboard();
-            case 'profile':
-                return renderProfile();
+
+            case 'sites':
+                // Sub-routing for Sites section
+                switch (navigation.activeSub) {
+                    case 'directory':
+                        return renderSiteDirectory();
+                    case 'favorites':
+                        return renderFavorites();
+                    case 'recent':
+                        return renderPlaceholder('Recently Viewed Sites', 'Your recently viewed sites will appear here');
+                    default:
+                        return renderSiteDirectory();
+                }
+
+            case 'tools':
+                // Sub-routing for Tools section
+                switch (navigation.activeSub) {
+                    case 'analytics':
+                        return renderPlaceholder('Analytics Tools');
+                    case 'monitor':
+                        return renderPlaceholder('Resource Monitor');
+                    case 'reports':
+                        return renderPlaceholder('Reports');
+                    default:
+                        return renderPlaceholder('Tools Section');
+                }
+
+            case 'system':
+                // Sub-routing for System section
+                switch (navigation.activeSub) {
+                    case 'config':
+                        return renderPlaceholder('System Configuration');
+                    case 'users':
+                        return renderPlaceholder('User Management');
+                    case 'security':
+                        return renderPlaceholder('Security Settings');
+                    default:
+                        return renderPlaceholder('System Section');
+                }
+
             default:
                 return renderDashboard();
         }
-    }, [activeTab, renderDashboard, renderProfile]);
+    }, [
+        navigation.activeSection,
+        navigation.activeSub,
+        renderDashboard,
+        renderSiteDirectory,
+        renderFavorites,
+        renderPlaceholder
+    ]);
 
     return (
         <div className={`modern-container ${isLoggingOut ? 'logging-out' : ''}`}>
             {/* Modern header with navigation */}
             <header className={`modern-header ${showElements ? 'modern-fade-in' : ''}`}>
-                <div className="modern-logo">NuCaloric System</div>
-                <nav className="modern-nav">
+                <div className="modern-header-top">
+                    <div className="modern-logo">NuCaloric System</div>
+
+                    {/* Mobile toggle button - only visible on small screens */}
                     <button
-                        className={`modern-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-                        onClick={(e) => handleTabChange('dashboard', e)}
+                        className="modern-nav-toggle"
+                        onClick={toggleMobileNav}
+                        aria-label="Toggle navigation"
                     >
-                        Dashboard
+                        {isMobileNavExpanded ? '✕' : '☰'}
                     </button>
-                    <button
-                        className={`modern-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-                        onClick={(e) => handleTabChange('profile', e)}
-                    >
-                        Profile
-                    </button>
-                    <button
-                        className="modern-nav-item logout-btn"
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </button>
+                </div>
+
+                {/* Navigation with expanded class for mobile */}
+                <nav className={`modern-nav-container ${isMobileNavExpanded ? 'expanded' : ''}`}>
+                    <div className="modern-main-nav">
+                        <button
+                            className={`modern-nav-item ${navigation.activeSection === 'dashboard' ? 'active' : ''}`}
+                            onClick={() => handleMainNavChange('dashboard')}
+                        >
+                            Dashboard
+                        </button>
+                        <button
+                            className={`modern-nav-item ${navigation.activeSection === 'sites' ? 'active' : ''}`}
+                            onClick={() => handleMainNavChange('sites')}
+                        >
+                            Sites
+                        </button>
+                        <button
+                            className={`modern-nav-item ${navigation.activeSection === 'tools' ? 'active' : ''}`}
+                            onClick={() => handleMainNavChange('tools')}
+                        >
+                            Tools
+                        </button>
+                        <button
+                            className={`modern-nav-item ${navigation.activeSection === 'system' ? 'active' : ''}`}
+                            onClick={() => handleMainNavChange('system')}
+                        >
+                            System
+                        </button>
+                        <button
+                            className="modern-nav-item logout-btn"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
+
+                    {/* Sub navigation for Sites section */}
+                    {navigation.activeSection === 'sites' && (
+                        <div className="modern-sub-nav">
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'directory' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('directory')}
+                            >
+                                Directory
+                            </button>
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'favorites' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('favorites')}
+                            >
+                                Favorites
+                            </button>
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'recent' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('recent')}
+                            >
+                                Recent
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Sub navigation for Tools section */}
+                    {navigation.activeSection === 'tools' && (
+                        <div className="modern-sub-nav">
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'analytics' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('analytics')}
+                            >
+                                Analytics
+                            </button>
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'monitor' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('monitor')}
+                            >
+                                Monitor
+                            </button>
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'reports' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('reports')}
+                            >
+                                Reports
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Sub navigation for System section */}
+                    {navigation.activeSection === 'system' && (
+                        <div className="modern-sub-nav">
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'config' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('config')}
+                            >
+                                Configuration
+                            </button>
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'users' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('users')}
+                            >
+                                Users
+                            </button>
+                            <button
+                                className={`modern-subnav-item ${navigation.activeSub === 'security' ? 'active' : ''}`}
+                                onClick={() => handleSubNavChange('security')}
+                            >
+                                Security
+                            </button>
+                        </div>
+                    )}
                 </nav>
+
+                {/* Breadcrumb navigation */}
+                <div className="modern-breadcrumbs">
+                    {navigation.breadcrumbs.map((crumb, index) => (
+                        <React.Fragment key={index}>
+                            {index > 0 && <span className="breadcrumb-separator">/</span>}
+                            <span className="breadcrumb-item">{crumb}</span>
+                        </React.Fragment>
+                    ))}
+                </div>
             </header>
 
             {/* Main content area */}

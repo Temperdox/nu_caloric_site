@@ -1,7 +1,10 @@
-// MainScene.jsx - Updated with terminal integration
-import React, { useState, useEffect, useCallback, memo } from 'react';
+// MainScene.jsx - Updated with SiteDirectory integration
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import TerminalConsole from '../TerminalConsole.jsx';
+import SiteDirectory from './sub_scenes/SiteDirectory.jsx';
 import '../../assets/css/TerminalConsole.css';
+import '../../assets/css/SiteDirectory.css';
+import '../../assets/css/MainScene.css';
 
 // Sample dashboard data
 const dashboardData = [
@@ -52,6 +55,12 @@ const MainScene = ({ user, onLogout }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [randomGlitches, setRandomGlitches] = useState(false);
     const [terminalHeight, setTerminalHeight] = useState(200); // Initial terminal height
+    const [showSiteDirectory, setShowSiteDirectory] = useState(false);
+    const [activeSubScene, setActiveSubScene] = useState(null);
+
+    const inputRef = useRef(null);
+    const terminalRef = useRef(null);
+    const subSceneRef = useRef(null);
 
     // Update time every second
     useEffect(() => {
@@ -127,13 +136,35 @@ const MainScene = ({ user, onLogout }) => {
     }, [terminalHeight]);
 
     // Handle terminal navigation
-    const handleTerminalNavigation = useCallback((scene, tab) => {
+    const handleTerminalNavigation = useCallback((scene, tab, component) => {
         if (scene === 'main') {
-            setActiveTab(tab || 'dashboard');
+            if (component === 'siteDirectory') {
+                setActiveSubScene('siteDirectory');
+                setShowSiteDirectory(true);
+            } else if (tab) {
+                setActiveTab(tab || 'dashboard');
+            }
         } else if (scene) {
             // This would typically go back to App.jsx to change scenes
-            // For now, let's just log it
             console.log(`Terminal navigation: ${scene} ${tab || ''}`);
+        }
+    }, []);
+
+    // Handle site navigation from SiteDirectory
+    const handleSiteNavigation = useCallback((url) => {
+        // Parse the URL to determine what to do
+        if (url.startsWith('/sites/')) {
+            const parts = url.split('/');
+            if (parts.length >= 3) {
+                const scene = parts[2];
+                const tab = parts[3] || null;
+
+                console.log(`Navigate to: scene=${scene}, tab=${tab}`);
+                // You can implement actual navigation here
+            }
+        } else {
+            console.log(`Navigate to: ${url}`);
+            // Handle other navigation as needed
         }
     }, []);
 
@@ -203,6 +234,16 @@ const MainScene = ({ user, onLogout }) => {
         );
     }, [user, formatDate, formatTime]);
 
+    // Render SiteDirectory tab
+    const renderSiteDirectory = useCallback(() => {
+        return (
+            <div className="site-directory-container">
+                <h2>Site Directory</h2>
+                <SiteDirectory isModern={false} onNavigate={handleSiteNavigation} />
+            </div>
+        );
+    }, [handleSiteNavigation]);
+
     // Render content based on active tab
     const renderContent = useCallback(() => {
         switch (activeTab) {
@@ -214,6 +255,18 @@ const MainScene = ({ user, onLogout }) => {
                 return renderDashboard();
         }
     }, [activeTab, renderDashboard, renderProfile]);
+
+    // Render active sub-scene
+    const renderSubScene = useCallback(() => {
+        if (!activeSubScene) return null;
+
+        switch (activeSubScene) {
+            case 'siteDirectory':
+                return renderSiteDirectory();
+            default:
+                return null;
+        }
+    }, [activeSubScene, renderSiteDirectory]);
 
     return (
         <div className={`main-scene ${randomGlitches ? 'glitching' : ''}`}>
@@ -244,8 +297,18 @@ const MainScene = ({ user, onLogout }) => {
                 </div>
             </div>
 
-            <div className="main-content" style={{ marginBottom: `${terminalHeight}px` }}>
-                {renderContent()}
+            <div className="main-content-layout">
+                {/* Main content area */}
+                <div className="main-content" style={{ marginBottom: activeSubScene ? '0' : `${terminalHeight}px` }}>
+                    {renderContent()}
+                </div>
+
+                {/* Sub-scene content area */}
+                {activeSubScene && (
+                    <div className="sub-scene-content" ref={subSceneRef} style={{ marginBottom: `${terminalHeight}px` }}>
+                        {renderSubScene()}
+                    </div>
+                )}
             </div>
 
             {/* Always visible terminal */}
@@ -256,6 +319,14 @@ const MainScene = ({ user, onLogout }) => {
                 <div className="terminal-resize-handle" onMouseDown={startTerminalResize}></div>
                 <div className="terminal-header-bar">
                     <div className="terminal-title">NuCaloric Terminal</div>
+                    {activeSubScene && (
+                        <button
+                            className="terminal-close-sub-scene"
+                            onClick={() => setActiveSubScene(null)}
+                        >
+                            Close Sub-Scene
+                        </button>
+                    )}
                 </div>
 
                 <TerminalConsole onNavigate={handleTerminalNavigation} />

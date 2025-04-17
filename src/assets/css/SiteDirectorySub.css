@@ -1,0 +1,186 @@
+/* SiteDirectorySub.css - Styling for the sub-scene component */
+
+/* Common styles */
+.sub-scene {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.sub-scene-header {
+    margin-bottom: 25px;
+}
+
+.sub-scene-tabs {
+    display: flex;
+    margin-top: 15px;
+}
+
+.sub-scene-content {
+    min-height: 400px;
+}
+
+.tools-placeholder,
+.admin-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+}
+
+/* Retro theme styles */
+.retro-sub-scene {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.retro-header h1 {
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 5px var(--text-color);
+    animation: textGlow 2s infinite;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.retro-tabs {
+    gap: 10px;
+}
+
+.retro-tabs button {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.retro-tabs button:hover {
+    box-shadow: 0 0 10px rgba(51, 255, 51, 0.5);
+}
+
+.retro-tabs button.active {
+    background-color: rgba(51, 255, 51, 0.2);
+    border-color: var(--text-color);
+    box-shadow: 0 0 10px rgba(51, 255, 51, 0.5);
+}
+
+.retro-placeholder {
+    border: 1px dashed var(--border-color);
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 30px;
+}
+
+.retro-placeholder h3 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px var(--text-color);
+}
+
+.retro-placeholder p {
+    color: #aaa;
+}
+
+/* Modern theme styles */
+.modern-sub-scene {
+    background-color: transparent;
+}
+
+.modern-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    border-bottom: 1px solid var(--cyber-cyan);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modern-tabs {
+    gap: 15px;
+}
+
+.modern-tabs button {
+    background: transparent;
+    border: none;
+    color: var(--cyber-text);
+    padding: 8px 20px;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.modern-tabs button::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--cyber-gradient-cyan);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.modern-tabs button:hover {
+    color: var(--cyber-cyan);
+}
+
+.modern-tabs button:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.modern-tabs button.active {
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 5px var(--cyber-cyan);
+}
+
+.modern-tabs button.active::before {
+    transform: scaleX(1);
+}
+
+.modern-placeholder {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--cyber-cyan);
+    border-radius: 4px;
+    padding: 40px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.modern-placeholder h3 {
+    color: var(--cyber-cyan);
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px var(--cyber-cyan);
+}
+
+.modern-placeholder p {
+    color: var(--cyber-text-dim);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sub-scene {
+        padding: 15px;
+    }
+
+    .sub-scene-tabs {
+        flex-wrap: wrap;
+    }
+
+    .modern-tabs button,
+    .retro-tabs button {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+}

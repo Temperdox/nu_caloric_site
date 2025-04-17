@@ -1,4 +1,4 @@
-/* TerminalConsole.css - Updated for always-visible terminal */
+/* TerminalConsole.css - Updated with retro resize effects */
 
 .terminal-console-container {
     position: absolute;
@@ -21,6 +21,11 @@
     transition: height 0.3s ease;
 }
 
+/* Remove transition when resizing */
+.terminal-console-container.always-visible.resizing {
+    transition: none;
+}
+
 /* Resize handle for terminal */
 .terminal-resize-handle {
     position: absolute;
@@ -38,6 +43,34 @@
 
 .terminal-resize-handle:active {
     background-color: rgba(51, 255, 51, 0.2);
+}
+
+/* Retro resize preview line */
+.terminal-resize-preview {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-top: 2px dashed #33ff33; /* bright green dashed line */
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 0 8px #33ff33; /* green glow */
+    animation: dashAnimation 0.5s linear infinite;
+}
+
+/* Animation for the dashed line */
+@keyframes dashAnimation {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 0;
+    }
+}
+
+/* Customize cursor during resize */
+body.terminal-resizing {
+    cursor: ns-resize !important;
 }
 
 .terminal-header-bar {
@@ -179,6 +212,7 @@
     height: auto;
     overflow-y: auto;
     padding-bottom: 10px; /* Add some space before terminal */
+    transition: margin-bottom 0.3s ease;
 }
 
 /* Blinking cursor animation */
@@ -196,6 +230,19 @@
     animation: blink 1s infinite;
 }
 
+/* Ensure text colors are vibrant and readable */
+.terminal-pink-cat {
+    color: #ff69b4 !important;
+}
+
+.terminal-cyan-eyes {
+    color: #00ffff !important;
+}
+
+.terminal-pink-burger {
+    color: #ff69b4 !important;
+}
+
 /* Media query for smaller screens */
 @media (max-width: 768px) {
     .terminal-console-container.always-visible {
@@ -210,12 +257,4 @@
     .terminal-input {
         font-size: 12px;
     }
-}
-
-.pink_cat{
-    color: var(#c842ca);
-}
-
-.cyan_eyes{
-    color: var(#33dcb5);
 }

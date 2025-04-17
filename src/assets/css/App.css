@@ -886,7 +886,7 @@ body {
 
 /* CRT Turn On Animation for Bootup */
 .bootup-scene.crt-startup {
-  animation: crtTurnOn 1.5s ease-out forwards;
+  animation: crtTurnOn 2.5s ease-out forwards;
 }
 
 /* Responsive adjustments */

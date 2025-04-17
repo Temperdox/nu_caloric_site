@@ -1,0 +1,111 @@
+/* Additional CSS for MainScene.jsx to support sub-scenes and terminal integration */
+
+/* Layout adjustments for main and sub-scene content */
+.main-content-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 60px); /* Adjust for header height */
+    overflow: hidden;
+}
+
+/* Main content area adjustments */
+.main-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) #111;
+    transition: margin-bottom 0.3s ease;
+}
+
+/* Sub-scene content area */
+.sub-scene-content {
+    height: 50%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) #111;
+    transition: margin-bottom 0.3s ease;
+    border-top: 1px solid var(--border-color);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    animation: fadeIn 0.5s ease;
+}
+
+/* Adjust scrollbar styling for main and sub-scene content */
+.main-content::-webkit-scrollbar,
+.sub-scene-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track,
+.sub-scene-content::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.main-content::-webkit-scrollbar-thumb,
+.sub-scene-content::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+/* Terminal header bar adjustments */
+.terminal-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Close sub-scene button in terminal header */
+.terminal-close-sub-scene {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 3px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+
+.terminal-close-sub-scene:hover {
+    background-color: rgba(51, 255, 51, 0.2);
+    box-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
+}
+
+/* SiteDirectory container styling */
+.site-directory-container {
+    padding: 10px 0;
+}
+
+.site-directory-container h2 {
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 15px;
+    text-shadow: 0 0 5px var(--text-color);
+    animation: textGlow 2s infinite;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+/* Animation for sub-scene content */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content-layout {
+        height: calc(100% - 100px); /* Adjust for taller header on mobile */
+    }
+
+    .sub-scene-content {
+        height: 40%;
+    }
+}

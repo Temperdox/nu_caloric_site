@@ -1,59 +1,187 @@
-import React, { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
+// TerminalConsole.jsx - Updated with hidden burger command
+import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import BurgerAnimation from './BurgerAnimation';
+
+// Terminal history and commands data structure
+const INITIAL_DIRECTORY = '/home/user';
+const USERNAME = 'admin';
+const HOSTNAME = 'nucaloric';
+
+// File system structure - used for navigation and autocomplete
+const fileSystem = {
+    '/': {
+        type: 'directory',
+        children: {
+            'home': {
+                type: 'directory',
+                children: {
+                    'user': {
+                        type: 'directory',
+                        children: {
+                            'documents': {
+                                type: 'directory',
+                                children: {
+                                    'report.txt': {
+                                        type: 'file',
+                                        content: 'NuCaloric System Report - Version 3.2.1\n\nSystem Status: Operational\nLast Maintenance: 2025-03-15\nNext Scheduled Check: 2025-04-30\n\nAlert Level: Normal\nSecurity Protocols: Active'
+                                    },
+                                    'notes.txt': {
+                                        type: 'file',
+                                        content: 'Remember to check the security logs weekly.\nBackup schedule changed to Tuesdays at 2am.'
+                                    }
+                                }
+                            },
+                            'sites': {
+                                type: 'directory',
+                                children: {
+                                    'dashboard': {
+                                        type: 'directory',
+                                        children: {
+                                            'main': { type: 'app', scene: 'main' },
+                                            'modern': { type: 'app', scene: 'modernMain' }
+                                        }
+                                    },
+                                    'profile': {
+                                        type: 'directory',
+                                        children: {
+                                            'user': { type: 'app', scene: 'main', tab: 'profile' }
+                                        }
+                                    },
+                                    'directory': {
+                                        type: 'app',
+                                        scene: 'main',
+                                        component: 'siteDirectory'  // This allows direct access to directory
+                                    },
+                                    'login': { type: 'app', scene: 'login' },
+                                    'boot': { type: 'app', scene: 'bootup' }
+                                }
+                            },
+                            'system': {
+                                type: 'directory',
+                                children: {
+                                    'logs': {
+                                        type: 'directory',
+                                        children: {
+                                            'system.log': {
+                                                type: 'file',
+                                                content: '2025-04-16 08:32:14 INFO: System startup completed\n2025-04-16 08:35:22 INFO: User login: admin\n2025-04-16 09:12:45 WARNING: High CPU usage detected\n2025-04-16 09:15:33 INFO: CPU usage returned to normal\n2025-04-16 10:22:18 INFO: Backup started\n2025-04-16 10:45:02 INFO: Backup completed successfully'
+                                            },
+                                            'security.log': {
+                                                type: 'file',
+                                                content: '2025-04-15 23:42:18 WARNING: Failed login attempt: username "root"\n2025-04-16 02:15:33 WARNING: Unusual access pattern detected\n2025-04-16 02:16:45 INFO: Security countermeasures activated\n2025-04-16 02:17:12 INFO: Threat contained\n2025-04-16 08:35:22 INFO: Admin login successful'
+                                            }
+                                        }
+                                    },
+                                    'config': {
+                                        type: 'directory',
+                                        children: {
+                                            'network.conf': {
+                                                type: 'file',
+                                                content: '# Network Configuration\nDNS=192.168.1.1\nGATEWAY=192.168.1.1\nIP_MODE=DHCP\n\n# Security Settings\nFIREWALL=ENABLED\nINTRUSION_DETECTION=ACTIVE\nPORT_SCANNING_PROTECTION=TRUE'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            'bin': {
+                type: 'directory',
+                children: {
+                    'ls': { type: 'system' },
+                    'cd': { type: 'system' },
+                    'pwd': { type: 'system' },
+                    'cat': { type: 'system' },
+                    'nano': { type: 'system' },
+                    'help': { type: 'system' },
+                    'clear': { type: 'system' },
+                    'echo': { type: 'system' },
+                    'date': { type: 'system' },
+                    'whoami': { type: 'system' }
+                }
+            }
+        }
+    }
+};
+
+// Available commands with their descriptions
+const commandHelp = {
+    'ls': 'List directory contents',
+    'cd': 'Change directory',
+    'pwd': 'Print working directory',
+    'cat': 'Display file contents',
+    'nano': 'Open file or app in editor',
+    'help': 'Display available commands',
+    'clear': 'Clear terminal screen',
+    'echo': 'Display a message',
+    'date': 'Display current date and time',
+    'whoami': 'Display current user',
+    'exit': 'Close the terminal'
+};
 
 // Terminal history item component
 const HistoryItem = memo(({ type, text }) => {
-    // Use a lookup object for different history item types
-    const contentMap = {
-        'command': <div className="terminal-history-command">{text}</div>,
-        'output': <div className="terminal-history-output">
-            {typeof text === 'string' && text.includes('<span')
-                ? <div dangerouslySetInnerHTML={{ __html: text }} />
-                : text}
-        </div>,
-        'error': <div className="terminal-history-error">{text}</div>,
-        'component': <div className="terminal-component">{text}</div>
-    };
-
-    return contentMap[type] || null;
+    if (type === 'command') {
+        return <div className="terminal-history-command">{text}</div>;
+    } else if (type === 'output') {
+        return <div className="terminal-history-output">{text}</div>;
+    } else if (type === 'error') {
+        return <div className="terminal-history-error">{text}</div>;
+    } else if (type === 'component') {
+        return <div className="terminal-component">{text}</div>;
+    }
+    return null;
 });
 
 HistoryItem.displayName = 'HistoryItem';
 
 // Main Terminal Component
 const TerminalConsole = ({ onNavigate }) => {
-    // Grouped related state together
-    const [terminalState, setTerminalState] = useState({
-        input: '',
-        currentDirectory: '/home/user',
-        historyIndex: -1,
-        showCompletion: false,
-        completionIndex: 0,
-        burgerMode: false
-    });
-
-    // Keep history and command history separate as they change often
+    const [input, setInput] = useState('');
     const [history, setHistory] = useState([
         { type: 'output', text: 'NuCaloric Terminal v3.2.1 - Type "help" for available commands' },
-        { type: 'output', text: 'Welcome, admin@nucaloric!' }
+        { type: 'output', text: `Welcome, ${USERNAME}@${HOSTNAME}!` }
     ]);
+    const [currentDirectory, setCurrentDirectory] = useState(INITIAL_DIRECTORY);
     const [commandHistory, setCommandHistory] = useState([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
+    const [showCompletion, setShowCompletion] = useState(false);
     const [completions, setCompletions] = useState([]);
+    const [completionIndex, setCompletionIndex] = useState(0);
+    const [burgerMode, setBurgerMode] = useState(false);
 
     const inputRef = useRef(null);
     const terminalRef = useRef(null);
 
-    // Constants for terminal
-    const USERNAME = 'admin';
-    const HOSTNAME = 'nucaloric';
-    const INITIAL_DIRECTORY = '/home/user';
+    // Add burger animation CSS to document
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.appendChild(document.createTextNode(`
+      .burger-animation {
+        margin: 10px 0;
+        font-family: monospace;
+        line-height: 1.2;
+        white-space: pre;
+      }
+      
+      .pink-cat {
+        color: #FF69B4;
+      }
+      
+      .cyan-eyes {
+        color: #00FFFF;
+      }
+      
+      .pink-burger {
+        color: #FF69B4;
+      }
+    `));
+        document.head.appendChild(style);
 
-    // Update terminal state with less re-renders
-    const updateTerminalState = useCallback((updates) => {
-        setTerminalState(prev => ({
-            ...prev,
-            ...updates
-        }));
+        return () => document.head.removeChild(style);
     }, []);
 
     // Keep terminal scrolled to bottom
@@ -65,12 +193,12 @@ const TerminalConsole = ({ onNavigate }) => {
 
     // Focus on input when terminal is clicked
     const focusInput = useCallback(() => {
-        if (inputRef.current && !terminalState.burgerMode) {
+        if (inputRef.current && !burgerMode) {
             inputRef.current.focus();
         }
-    }, [terminalState.burgerMode]);
+    }, [burgerMode]);
 
-    // Path utilities
+    // Resolve path (handle relative paths)
     const resolvePath = useCallback((path) => {
         // If absolute path, return it directly
         if (path.startsWith('/')) {
@@ -79,7 +207,7 @@ const TerminalConsole = ({ onNavigate }) => {
 
         // Handle special cases
         if (path === '.') {
-            return terminalState.currentDirectory;
+            return currentDirectory;
         }
 
         // Handle empty input (cd with no args)
@@ -87,7 +215,7 @@ const TerminalConsole = ({ onNavigate }) => {
             return INITIAL_DIRECTORY;
         }
 
-        const currentParts = terminalState.currentDirectory.split('/').filter(Boolean);
+        const currentParts = currentDirectory.split('/').filter(Boolean);
         const pathParts = path.split('/').filter(Boolean);
 
         let resultParts = [...currentParts];
@@ -103,116 +231,7 @@ const TerminalConsole = ({ onNavigate }) => {
         }
 
         return '/' + resultParts.join('/');
-    }, [terminalState.currentDirectory]);
-
-    // Memoize fileSystem data structure to prevent recreation
-    const fileSystem = useMemo(() => ({
-        '/': {
-            type: 'directory',
-            children: {
-                'home': {
-                    type: 'directory',
-                    children: {
-                        'user': {
-                            type: 'directory',
-                            children: {
-                                'documents': {
-                                    type: 'directory',
-                                    children: {
-                                        'report.txt': {
-                                            type: 'file',
-                                            content: 'NuCaloric System Report - Version 3.2.1\n\nSystem Status: Operational\nLast Maintenance: 2025-03-15\nNext Scheduled Check: 2025-04-30\n\nAlert Level: Normal\nSecurity Protocols: Active'
-                                        },
-                                        'notes.txt': {
-                                            type: 'file',
-                                            content: 'Remember to check the security logs weekly.\nBackup schedule changed to Tuesdays at 2am.'
-                                        }
-                                    }
-                                },
-                                'sites': {
-                                    type: 'directory',
-                                    children: {
-                                        'dashboard': {
-                                            type: 'directory',
-                                            children: {
-                                                'main': { type: 'app', scene: 'main' },
-                                                'modern': { type: 'app', scene: 'modernMain' }
-                                            }
-                                        },
-                                        'profile': {
-                                            type: 'directory',
-                                            children: {
-                                                'user': { type: 'app', scene: 'main', tab: 'profile' }
-                                            }
-                                        },
-                                        'login': { type: 'app', scene: 'login' },
-                                        'boot': { type: 'app', scene: 'bootup' }
-                                    }
-                                },
-                                'system': {
-                                    type: 'directory',
-                                    children: {
-                                        'logs': {
-                                            type: 'directory',
-                                            children: {
-                                                'system.log': {
-                                                    type: 'file',
-                                                    content: '2025-04-16 08:32:14 INFO: System startup completed\n2025-04-16 08:35:22 INFO: User login: admin\n2025-04-16 09:12:45 WARNING: High CPU usage detected\n2025-04-16 09:15:33 INFO: CPU usage returned to normal\n2025-04-16 10:22:18 INFO: Backup started\n2025-04-16 10:45:02 INFO: Backup completed successfully'
-                                                },
-                                                'security.log': {
-                                                    type: 'file',
-                                                    content: '2025-04-15 23:42:18 WARNING: Failed login attempt: username "root"\n2025-04-16 02:15:33 WARNING: Unusual access pattern detected\n2025-04-16 02:16:45 INFO: Security countermeasures activated\n2025-04-16 02:17:12 INFO: Threat contained\n2025-04-16 08:35:22 INFO: Admin login successful'
-                                                }
-                                            }
-                                        },
-                                        'config': {
-                                            type: 'directory',
-                                            children: {
-                                                'network.conf': {
-                                                    type: 'file',
-                                                    content: '# Network Configuration\nDNS=192.168.1.1\nGATEWAY=192.168.1.1\nIP_MODE=DHCP\n\n# Security Settings\nFIREWALL=ENABLED\nINTRUSION_DETECTION=ACTIVE\nPORT_SCANNING_PROTECTION=TRUE'
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                'bin': {
-                    type: 'directory',
-                    children: {
-                        'ls': { type: 'system' },
-                        'cd': { type: 'system' },
-                        'pwd': { type: 'system' },
-                        'cat': { type: 'system' },
-                        'nano': { type: 'system' },
-                        'help': { type: 'system' },
-                        'clear': { type: 'system' },
-                        'echo': { type: 'system' },
-                        'date': { type: 'system' },
-                        'whoami': { type: 'system' }
-                    }
-                }
-            }
-        }
-    }), []);
-
-    // Memoize command help object
-    const commandHelp = useMemo(() => ({
-        'ls': 'List directory contents',
-        'cd': 'Change directory',
-        'pwd': 'Print working directory',
-        'cat': 'Display file contents',
-        'nano': 'Open file or app in editor',
-        'help': 'Display available commands',
-        'clear': 'Clear terminal screen',
-        'echo': 'Display a message',
-        'date': 'Display current date and time',
-        'whoami': 'Display current user',
-        'exit': 'Close the terminal'
-    }), []);
+    }, [currentDirectory]);
 
     // Check if path exists
     const pathExists = useCallback((path) => {
@@ -229,7 +248,7 @@ const TerminalConsole = ({ onNavigate }) => {
         }
 
         return true;
-    }, [resolvePath, fileSystem]);
+    }, [resolvePath]);
 
     // Check if path is a directory
     const isDirectory = useCallback((path) => {
@@ -246,7 +265,7 @@ const TerminalConsole = ({ onNavigate }) => {
         }
 
         return current.type === 'directory';
-    }, [resolvePath, fileSystem]);
+    }, [resolvePath]);
 
     // Get object at path
     const getObjectAtPath = useCallback((path) => {
@@ -263,19 +282,19 @@ const TerminalConsole = ({ onNavigate }) => {
         }
 
         return current;
-    }, [resolvePath, fileSystem]);
+    }, [resolvePath]);
 
     // Generate tab completions for current input
     const generateCompletions = useCallback(() => {
-        const { input, currentDirectory } = terminalState;
         const words = input.split(' ');
         const lastWord = words[words.length - 1];
 
         // Command completion (first word)
         if (words.length === 1) {
-            return Object.keys(commandHelp).filter(cmd =>
+            const possibleCommands = Object.keys(commandHelp).filter(cmd =>
                 cmd.startsWith(lastWord)
             );
+            return possibleCommands;
         }
 
         // Path completion (for commands that take paths)
@@ -311,70 +330,59 @@ const TerminalConsole = ({ onNavigate }) => {
         }
 
         return [];
-    }, [terminalState, commandHelp, resolvePath, getObjectAtPath]);
+    }, [input, currentDirectory, resolvePath, getObjectAtPath]);
 
     // Handle tab completion
     const handleTabCompletion = useCallback(() => {
-        if (terminalState.burgerMode) return; // Disable in burger mode
+        if (burgerMode) return; // Disable in burger mode
 
         const completionOptions = generateCompletions();
 
         if (completionOptions.length === 1) {
             // Only one option, complete directly
-            const words = terminalState.input.split(' ');
+            const words = input.split(' ');
             words[words.length - 1] = completionOptions[0];
-            updateTerminalState({
-                input: words.join(' '),
-                showCompletion: false
-            });
+            setInput(words.join(' '));
+            setShowCompletion(false);
         } else if (completionOptions.length > 1) {
             // Multiple options, show completion list
             setCompletions(completionOptions);
-            updateTerminalState({
-                completionIndex: 0,
-                showCompletion: true
-            });
+            setCompletionIndex(0);
+            setShowCompletion(true);
         }
-    }, [terminalState, generateCompletions, updateTerminalState]);
+    }, [input, generateCompletions, burgerMode]);
 
     // Select a completion option
     const selectCompletion = useCallback((index) => {
         if (completions.length === 0) return;
 
-        const words = terminalState.input.split(' ');
+        const words = input.split(' ');
         words[words.length - 1] = completions[index];
-        updateTerminalState({
-            input: words.join(' '),
-            showCompletion: false
-        });
-    }, [terminalState.input, completions, updateTerminalState]);
+        setInput(words.join(' '));
+        setShowCompletion(false);
+    }, [input, completions]);
 
     // Handle burger animation stop
     const stopBurgerAnimation = useCallback(() => {
-        updateTerminalState({ burgerMode: false });
+        setBurgerMode(false);
         setHistory(prev => [...prev, { type: 'output', text: 'Animation stopped.' }]);
-    }, [updateTerminalState]);
+    }, []);
 
-    // Handle command execution - this is a critical performance function
+    // Handle command execution
     const executeCommand = useCallback((commandLine) => {
-        const { burgerMode, currentDirectory } = terminalState;
-
         // Skip if in burger mode
         if (burgerMode && commandLine !== 'clear') {
             return;
         }
 
         // Add command to history
-        const newCommand = {
-            type: 'command',
-            text: `${USERNAME}@${HOSTNAME}:${currentDirectory}$ ${commandLine}`
-        };
+        const newCommand = { type: 'command', text: `${USERNAME}@${HOSTNAME}:${currentDirectory}$ ${commandLine}` };
         const historyWithCommand = [...history, newCommand];
         setHistory(historyWithCommand);
 
         // Add to command history for up/down navigation
-        setCommandHistory(prev => [...prev, commandLine]);
-        updateTerminalState({ historyIndex: -1 });
+        setCommandHistory([...commandHistory, commandLine]);
+        setHistoryIndex(-1);
 
         // Parse command and arguments
         const args = commandLine.split(' ');
@@ -387,18 +395,17 @@ const TerminalConsole = ({ onNavigate }) => {
         // Check for hidden commands first
         if (command === 'nano' && args[0] === 'on_burger') {
             // Execute burger animation
-            updateTerminalState({ burgerMode: true });
+            setBurgerMode(true);
             outputItems.push({
                 type: 'component',
                 text: <BurgerAnimation onExit={stopBurgerAnimation} />
             });
 
             setHistory([...historyWithCommand, ...outputItems]);
-            updateTerminalState({ input: '' });
+            setInput('');
             return;
         }
 
-        // Command execution logic
         switch (command) {
             case 'help': {
                 outputItems.push({
@@ -448,7 +455,7 @@ const TerminalConsole = ({ onNavigate }) => {
                 } else if (!isDirectory(newPath)) {
                     outputItems.push({ type: 'error', text: `cd: not a directory: ${args[0]}` });
                 } else {
-                    updateTerminalState({ currentDirectory: newPath });
+                    setCurrentDirectory(newPath);
                 }
                 break;
             }
@@ -472,7 +479,14 @@ const TerminalConsole = ({ onNavigate }) => {
                 } else if (fileObject.type === 'directory') {
                     outputItems.push({ type: 'error', text: `cat: ${args[0]}: Is a directory` });
                 } else if (fileObject.type === 'app') {
-                    if (onNavigate) {
+                    if (fileObject.component) {
+                        if (onNavigate) {
+                            onNavigate(fileObject.scene, fileObject.tab, fileObject.component);
+                            outputItems.push({ type: 'output', text: `Opening component: ${args[0]}` });
+                        } else {
+                            outputItems.push({ type: 'error', text: `cat: ${args[0]}: Cannot display component` });
+                        }
+                    } else if (onNavigate) {
                         onNavigate(fileObject.scene, fileObject.tab);
                         outputItems.push({ type: 'output', text: `Opening application: ${args[0]}` });
                     } else {
@@ -500,7 +514,14 @@ const TerminalConsole = ({ onNavigate }) => {
                 } else if (nanoObject.type === 'directory') {
                     outputItems.push({ type: 'error', text: `nano: ${args[0]}: Is a directory` });
                 } else if (nanoObject.type === 'app') {
-                    if (onNavigate) {
+                    if (nanoObject.component) {
+                        if (onNavigate) {
+                            onNavigate(nanoObject.scene, nanoObject.tab, nanoObject.component);
+                            outputItems.push({ type: 'output', text: `Opening component: ${args[0]}` });
+                        } else {
+                            outputItems.push({ type: 'error', text: `nano: ${args[0]}: Cannot edit component` });
+                        }
+                    } else if (onNavigate) {
                         onNavigate(nanoObject.scene, nanoObject.tab);
                         outputItems.push({ type: 'output', text: `Opening application: ${args[0]}` });
                     } else {
@@ -516,8 +537,8 @@ const TerminalConsole = ({ onNavigate }) => {
 
             case 'clear':
                 setHistory([]);
-                if (terminalState.burgerMode) {
-                    updateTerminalState({ burgerMode: false });
+                if (burgerMode) {
+                    setBurgerMode(false);
                 }
                 break;
 
@@ -551,45 +572,35 @@ const TerminalConsole = ({ onNavigate }) => {
 
         // Update history with command output
         setHistory([...historyWithCommand, ...outputItems]);
-        updateTerminalState({ input: '' });
+        setInput('');
 
         // Execute special commands
         if (command === 'exit') {
             // Handle exit command - could minimize the terminal
         }
     }, [
-        terminalState,
+        currentDirectory,
         history,
+        commandHistory,
         resolvePath,
         pathExists,
         isDirectory,
         getObjectAtPath,
         onNavigate,
-        stopBurgerAnimation,
-        updateTerminalState,
-        commandHelp
+        burgerMode,
+        stopBurgerAnimation
     ]);
 
     // Handle input changes
     const handleInputChange = useCallback((e) => {
-        if (terminalState.burgerMode) return; // Disable in burger mode
+        if (burgerMode) return; // Disable in burger mode
 
-        updateTerminalState({
-            input: e.target.value,
-            showCompletion: false
-        });
-    }, [terminalState.burgerMode, updateTerminalState]);
+        setInput(e.target.value);
+        setShowCompletion(false);
+    }, [burgerMode]);
 
     // Handle key presses in input field
     const handleKeyDown = useCallback((e) => {
-        const {
-            burgerMode,
-            showCompletion,
-            completionIndex,
-            historyIndex,
-            input
-        } = terminalState;
-
         // In burger mode, only handle Ctrl+C/Cmd+C
         if (burgerMode) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
@@ -604,7 +615,7 @@ const TerminalConsole = ({ onNavigate }) => {
             if (showCompletion && completions.length > 0) {
                 // Cycle through completion options
                 const newIndex = (completionIndex + 1) % completions.length;
-                updateTerminalState({ completionIndex: newIndex });
+                setCompletionIndex(newIndex);
             } else {
                 // Generate new completions
                 handleTabCompletion();
@@ -626,7 +637,7 @@ const TerminalConsole = ({ onNavigate }) => {
 
         // Handle Escape key to cancel completion
         if (e.key === 'Escape') {
-            updateTerminalState({ showCompletion: false });
+            setShowCompletion(false);
             return;
         }
 
@@ -634,11 +645,9 @@ const TerminalConsole = ({ onNavigate }) => {
         if (e.key === 'ArrowUp') {
             if (commandHistory.length > 0 && historyIndex < commandHistory.length - 1) {
                 const newIndex = historyIndex + 1;
-                updateTerminalState({
-                    historyIndex: newIndex,
-                    input: commandHistory[commandHistory.length - 1 - newIndex],
-                    showCompletion: false
-                });
+                setHistoryIndex(newIndex);
+                setInput(commandHistory[commandHistory.length - 1 - newIndex]);
+                setShowCompletion(false);
             }
             return;
         }
@@ -646,59 +655,56 @@ const TerminalConsole = ({ onNavigate }) => {
         if (e.key === 'ArrowDown') {
             if (historyIndex > 0) {
                 const newIndex = historyIndex - 1;
-                updateTerminalState({
-                    historyIndex: newIndex,
-                    input: commandHistory[commandHistory.length - 1 - newIndex],
-                    showCompletion: false
-                });
+                setHistoryIndex(newIndex);
+                setInput(commandHistory[commandHistory.length - 1 - newIndex]);
             } else if (historyIndex === 0) {
-                updateTerminalState({
-                    historyIndex: -1,
-                    input: '',
-                    showCompletion: false
-                });
-            } else {
-                updateTerminalState({ showCompletion: false });
+                setHistoryIndex(-1);
+                setInput('');
             }
+            setShowCompletion(false);
             return;
         }
 
         // Close completion on any other key
         if (showCompletion) {
-            updateTerminalState({ showCompletion: false });
+            setShowCompletion(false);
         }
     }, [
-        terminalState,
+        input,
+        historyIndex,
         commandHistory,
-        completions,
         executeCommand,
+        showCompletion,
+        completions,
+        completionIndex,
         handleTabCompletion,
         selectCompletion,
-        stopBurgerAnimation,
-        updateTerminalState
+        burgerMode,
+        stopBurgerAnimation
     ]);
 
-    // Render only what's needed based on current state
     return (
         <div className="terminal-content-area" ref={terminalRef} onClick={focusInput}>
             {history.map((item, index) => (
                 <HistoryItem
                     key={index}
                     type={item.type}
-                    text={item.text}
+                    text={item.type === 'output' && typeof item.text === 'string' && item.text.includes('<span')
+                        ? <div dangerouslySetInnerHTML={{ __html: item.text }} />
+                        : item.text}
                 />
             ))}
 
-            {!terminalState.burgerMode && (
+            {!burgerMode && (
                 <div className="terminal-input-line">
-                    <span className="terminal-prompt">
-                        {`${USERNAME}@${HOSTNAME}:${terminalState.currentDirectory}$ `}
-                    </span>
+          <span className="terminal-prompt">
+            {`${USERNAME}@${HOSTNAME}:${currentDirectory}$ `}
+          </span>
                     <input
                         ref={inputRef}
                         type="text"
                         className="terminal-input"
-                        value={terminalState.input}
+                        value={input}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         autoFocus
@@ -706,12 +712,12 @@ const TerminalConsole = ({ onNavigate }) => {
                 </div>
             )}
 
-            {terminalState.showCompletion && completions.length > 0 && !terminalState.burgerMode && (
+            {showCompletion && completions.length > 0 && !burgerMode && (
                 <div className="terminal-completion">
                     {completions.map((completion, index) => (
                         <div
                             key={completion}
-                            className={`terminal-completion-item ${index === terminalState.completionIndex ? 'active' : ''}`}
+                            className={`terminal-completion-item ${index === completionIndex ? 'active' : ''}`}
                             onClick={() => selectCompletion(index)}
                         >
                             {completion}
