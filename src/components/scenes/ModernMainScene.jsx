@@ -1,7 +1,9 @@
-// ModernMainScene.jsx - Updated with improved navigation and SiteDirectory integration
+// ModernMainScene.jsx - Updated to properly handle Propaganda section
 import React, { useState, useEffect, useCallback } from 'react';
 import SiteDirectory from './sub_scenes/SiteDirectory';
+import PropagandaSub from './sub_scenes/PropagandaSub.jsx'; // Import PropagandaSub directly
 import '../../assets/css/SiteDirectorySub.css';
+import '../../assets/css/PropagandaSub.css';
 
 // Sample data for metrics and notifications
 const dashboardData = [
@@ -30,7 +32,7 @@ const favoriteSites = [
 
 const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
     // State for time and animations
-    const [, setCurrentTime] = useState(new Date());
+    const [currentTime, setCurrentTime] = useState(new Date());
     const [showElements, setShowElements] = useState(false);
 
     // State for navigation
@@ -142,6 +144,10 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
                 newBreadcrumbs = ['Sites'];
                 newSubSection = 'directory'; // Default sub-section
                 break;
+            case 'propaganda':
+                // Add propaganda section
+                newBreadcrumbs = ['Information Distribution Center'];
+                break;
             case 'tools':
                 newBreadcrumbs = ['Tools'];
                 newSubSection = 'analytics'; // Default sub-section
@@ -221,7 +227,7 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
 
     // Capitalize first letter of a string (helper function)
     const capitalize = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
+        return string?.charAt(0).toUpperCase() + string?.slice(1);
     };
 
     // Handle site navigation from SiteDirectory component
@@ -235,7 +241,7 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
                 const tab = parts[3] || null;
 
                 console.log(`Navigate to: scene=${scene}, tab=${tab}`);
-                // Implement actual navigation if needed
+                // You can implement actual navigation if needed
             }
         } else if (url.startsWith('/tools/')) {
             // Handle tools navigation
@@ -374,7 +380,7 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
     ), [renderMetricCard]);
 
     // Render user profile content
-    useCallback(() => (
+    const renderProfile = useCallback(() => (
         <div className="modern-fade-in" style={{ width: '100%' }}>
             <div className="modern-panel glow-magenta">
                 <div className="modern-panel-header">
@@ -456,10 +462,32 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
             </div>
         </div>
     ), [user, formatDate, formatTime]);
-// Render sites directory content
+
+    // Render sites directory content
     const renderSiteDirectory = useCallback(() => (
         <div className="modern-fade-in" style={{ width: '100%' }}>
-            <SiteDirectory isModern={true} onNavigate={handleSiteNavigation} />
+            <div className="modern-panel">
+                <div className="modern-panel-header">
+                    <div className="modern-panel-title">
+                        <span>🔗</span>Site Directory
+                    </div>
+                </div>
+                <SiteDirectory isModern={true} onNavigate={handleSiteNavigation} />
+            </div>
+        </div>
+    ), [handleSiteNavigation]);
+
+    // Render propaganda content
+    const renderPropaganda = useCallback(() => (
+        <div className="modern-fade-in" style={{ width: '100%' }}>
+            <div className="modern-panel">
+                <div className="modern-panel-header">
+                    <div className="modern-panel-title">
+                        <span>📰</span>Information Distribution Center
+                    </div>
+                </div>
+                <PropagandaSub isModern={true} onNavigate={handleSiteNavigation} />
+            </div>
         </div>
     ), [handleSiteNavigation]);
 
@@ -496,6 +524,10 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
         switch (navigation.activeSection) {
             case 'dashboard':
                 return renderDashboard();
+
+            case 'propaganda':
+                // Add propaganda section rendering
+                return renderPropaganda();
 
             case 'sites':
                 // Sub-routing for Sites section
@@ -545,7 +577,8 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
         renderDashboard,
         renderSiteDirectory,
         renderFavorites,
-        renderPlaceholder
+        renderPlaceholder,
+        renderPropaganda
     ]);
 
     return (
@@ -579,6 +612,13 @@ const ModernMainScene = ({ user, onLogout, isLoggingOut }) => {
                             onClick={() => handleMainNavChange('sites')}
                         >
                             Sites
+                        </button>
+                        {/* Add Propaganda navigation button */}
+                        <button
+                            className={`modern-nav-item ${navigation.activeSection === 'propaganda' ? 'active' : ''}`}
+                            onClick={() => handleMainNavChange('propaganda')}
+                        >
+                            Propaganda
                         </button>
                         <button
                             className={`modern-nav-item ${navigation.activeSection === 'tools' ? 'active' : ''}`}

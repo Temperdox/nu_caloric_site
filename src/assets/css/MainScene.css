@@ -20,14 +20,14 @@
 
 /* Sub-scene content area */
 .sub-scene-content {
-    height: 50%;
+    height: fit-content;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--border-color) #111;
     transition: margin-bottom 0.3s ease;
     border-top: 1px solid var(--border-color);
     background-color: rgba(0, 0, 0, 0.7);
-    padding: 15px;
+    /*padding: 15px;*/
     animation: fadeIn 0.5s ease;
 }
 

@@ -1,10 +1,12 @@
-// MainScene.jsx - Updated with SiteDirectory integration
+// MainScene.jsx - Updated with proper sub-scene handling for Propaganda
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import TerminalConsole from '../terminal/TerminalConsole.jsx';
 import SiteDirectory from './sub_scenes/SiteDirectory.jsx';
+import PropagandaSection from './sub_scenes/PropagandaSection.jsx'; // Import the Propaganda section
 import '../../assets/css/TerminalConsole.css';
 import '../../assets/css/SiteDirectory.css';
 import '../../assets/css/MainScene.css';
+import '../../assets/css/PropagandaSub.css'; // Import Propaganda CSS
 
 // Sample dashboard data
 const dashboardData = [
@@ -55,10 +57,9 @@ const MainScene = ({ user, onLogout }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [randomGlitches, setRandomGlitches] = useState(false);
     const [terminalHeight, setTerminalHeight] = useState(200); // Initial terminal height
-    const [, setShowSiteDirectory] = useState(false);
     const [activeSubScene, setActiveSubScene] = useState(null);
-    useRef(null);
-    useRef(null);
+    const mainContentRef = useRef(null);
+    const toolbarRef = useRef(null);
     const subSceneRef = useRef(null);
 
     // Update time every second
@@ -184,9 +185,13 @@ const MainScene = ({ user, onLogout }) => {
         if (scene === 'main') {
             if (component === 'siteDirectory') {
                 setActiveSubScene('siteDirectory');
-                setShowSiteDirectory(true);
+            } else if (component === 'propaganda') {
+                // Add handler for propaganda component
+                setActiveSubScene('propaganda');
             } else if (tab) {
                 setActiveTab(tab || 'dashboard');
+                // Clear sub-scene when switching main tabs
+                setActiveSubScene(null);
             }
         } else if (scene) {
             // This would typically go back to App.jsx to change scenes
@@ -210,6 +215,11 @@ const MainScene = ({ user, onLogout }) => {
             console.log(`Navigate to: ${url}`);
             // Handle other navigation as needed
         }
+    }, []);
+
+    // Toggle sub-scene display
+    const toggleSubScene = useCallback((subScene) => {
+        setActiveSubScene(prev => prev === subScene ? null : subScene);
     }, []);
 
     // Render the dashboard tab
@@ -307,10 +317,13 @@ const MainScene = ({ user, onLogout }) => {
         switch (activeSubScene) {
             case 'siteDirectory':
                 return renderSiteDirectory();
+            case 'propaganda':
+                // Add Propaganda section render
+                return <PropagandaSection isModern={false} onNavigate={handleSiteNavigation} />;
             default:
                 return null;
         }
-    }, [activeSubScene, renderSiteDirectory]);
+    }, [activeSubScene, renderSiteDirectory, handleSiteNavigation]);
 
     return (
         <div className={`main-scene ${randomGlitches ? 'glitching' : ''}`}>
@@ -318,18 +331,43 @@ const MainScene = ({ user, onLogout }) => {
                 <div className="header-left">
                     <h1>NuCaloric System</h1>
                     <div className="navigation">
+                        {/* Main tabs only - no sub-scenes in top nav */}
                         <button
                             className={`nav-button ${activeTab === 'dashboard' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('dashboard')}
+                            onClick={() => {
+                                setActiveTab('dashboard');
+                                setActiveSubScene(null); // Clear any active sub-scene
+                            }}
                         >
                             Dashboard
                         </button>
                         <button
                             className={`nav-button ${activeTab === 'profile' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('profile')}
+                            onClick={() => {
+                                setActiveTab('profile');
+                                setActiveSubScene(null); // Clear any active sub-scene
+                            }}
                         >
                             Profile
                         </button>
+
+                        {/* Optional: Add sub-scene launch buttons in a different style or section
+                        <div className="sub-scene-launcher">
+                            <button
+                                className="launch-button"
+                                title="View Site Directory"
+                                onClick={() => toggleSubScene('siteDirectory')}
+                            >
+                                Sites
+                            </button>
+                            <button
+                                className="launch-button"
+                                title="View Propaganda Section"
+                                onClick={() => toggleSubScene('propaganda')}
+                            >
+                                Archives
+                            </button>
+                        </div>*/}
                     </div>
                 </div>
                 <div className="header-right">

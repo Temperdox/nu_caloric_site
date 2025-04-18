@@ -1,4 +1,4 @@
-// FileSystemData.js - Virtual file system structure
+// FileSystemData.js - Virtual file system structure - Updated with Propaganda section
 export const fileSystem = {
     '/': {
         type: 'directory',
@@ -42,6 +42,11 @@ export const fileSystem = {
                                         type: 'app',
                                         scene: 'main',
                                         component: 'siteDirectory'  // This allows direct access to directory
+                                    },
+                                    'propaganda': {
+                                        type: 'app',
+                                        scene: 'main',
+                                        component: 'propaganda'  // This allows direct access to propaganda
                                     },
                                     'login': { type: 'app', scene: 'login' },
                                     'boot': { type: 'app', scene: 'bootup' }
