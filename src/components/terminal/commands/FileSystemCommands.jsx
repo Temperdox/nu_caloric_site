@@ -205,6 +205,29 @@ const FileSystemCommands = {
             return;
         }
 
+        if (args[0] === 'burger_is_cool') {
+            console.log("BURGER MODE ACTIVATED");
+
+            // Set a flag in localStorage
+            localStorage.setItem('burger_mode_active', 'true');
+
+            // Clear the terminal
+            setHistory([]);
+
+            // Add a message indicating reload
+            setHistory([
+                ...history,
+                { type: 'output', text: 'Activating burger mode... Please wait...' }
+            ]);
+
+            // Reload the page after a short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+
+            return;
+        }
+
         const filePath = resolvePath(args[0], currentDirectory);
         const fileObject = getObjectAtPath(filePath);
 

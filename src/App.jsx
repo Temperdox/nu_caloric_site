@@ -39,7 +39,19 @@ function App() {
     const [isPageVisible, setIsPageVisible] = useState(true);
 
     // Memoized scene change function
-    const changeScene = useCallback((sceneName, userData = null) => {
+    const changeScene = useCallback((sceneName, userData = null, specialMode = null) => {
+        console.log(`Changing scene to: ${sceneName}, specialMode: ${specialMode}`);
+
+        if (specialMode === 'burger_mode') {
+            setScene({
+                current: sceneName,
+                userData: userData,
+                specialMode: specialMode,
+                isLoggingOut: false
+            });
+            return;
+        }
+
         const overlay = document.getElementById('scene-transition-overlay');
 
         if (overlay) {
@@ -51,7 +63,8 @@ function App() {
                     setScene(prev => ({
                         ...prev,
                         current: sceneName,
-                        userData: userData || prev.userData
+                        userData: userData || prev.userData,
+                        specialMode: specialMode
                     }));
 
                     // Conditionally show dialog, only after going to main scene
@@ -73,7 +86,8 @@ function App() {
             setScene(prev => ({
                 ...prev,
                 current: sceneName,
-                userData: userData || prev.userData
+                userData: userData || prev.userData,
+                specialMode: specialMode
             }));
 
             if (sceneName === 'main' && userData) {
@@ -280,7 +294,11 @@ function App() {
         const sceneMap = {
             'bootup': (
                 <Suspense fallback={<LoadingFallback />}>
-                    <BootupScene onComplete={() => changeScene('login')} isPageVisible={isPageVisible} />
+                    <BootupScene
+                        onComplete={() => changeScene('login')}
+                        specialMode={scene.specialMode}
+                        isPageVisible={isPageVisible}
+                    />
                 </Suspense>
             ),
             'login': (

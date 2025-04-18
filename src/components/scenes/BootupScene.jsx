@@ -1,76 +1,8 @@
-// BootupScene.js - Updated with animated borders, header and footer
+// Fixed BootupScene.jsx with ESLint error corrected
+
 import React, { useEffect, useRef, useState } from 'react';
 
-// Terminal text data with color parsing
-const terminalData = [
-    "[c2]NuCaloric BioTech Industries[/c2]",
-    "[cf]────────────────────────────────[/cf]",
-    "",
-    "Color Test: [c0]█[/c0][c1]█[/c1][c2]█[/c2][c3]█[/c3][c4]█[/c4][c5]█[/c5][c6]█[/c6][c7]█[/c7][c8]█[/c8][c9]█[/c9][ca]█[/ca][cb]█[/cb][cc]█[/cc][cd]█[/cd][ce]█[/ce][cf]█[/cf]",
-    "",
-    "[c3]Quantified Health Monitoring System[/c3]",
-    "[c7]v3.2.1 (Build 7720-RC2)[/c7]",
-    "[p1][/p1]",
-    "[cd]█████████     ███      ███[/cd]",
-    "[cd]███      ███  ███      ███[/cd]",
-    "[cd]███      ███  ███      ███[/cd]",
-    "[cd]███      ███  █████████   [/cd]",
-    "",
-    "[p1]NuCaloric Systems v3.2.1 - Initializing...[/p1]",
-    "[c8]* Initializing system hardware...[/c8]",
-    "[c8]* Performing memory checks...[/c8]",
-    "  - Primary memory bank.............. [c2]OK[/c2]",
-    "  - Extended memory.................. [c2]OK[/c2]",
-    "  - Cache coherency.................. [c2]OK[/c2]",
-    "  - NVRAM integrity.................. [c2]OK[/c2]",
-    "",
-    "Loading kernel modules.......... [c2]OK[/c2]",
-    "Loading microcode patches....... [c2]OK[/c2]",
-    "Checking system integrity...... [c2]OK[/c2]",
-    "Initializing memory............. [c2]OK[/c2]",
-    "Starting memory manager......... [c2]OK[/c2]",
-    "Initializing device tree........ [c2]OK[/c2]",
-    "Loading device drivers.......... [c2]OK[/c2]",
-    "Initializing PCI bus............ [c2]OK[/c2]",
-    "Probing USB controllers......... [c2]OK[/c2]",
-    "Starting I/O subsystem.......... [c2]OK[/c2]",
-    "Mounting file systems........... [c2]OK[/c2]",
-    "Starting system logger.......... [c2]OK[/c2]",
-    "Starting network services....... [c2]OK[/c2]",
-    "Establishing secure connection... [c2]OK[/c2]",
-    "Starting firewall............... [c2]OK[/c2]",
-    "Starting authentication service.. [c2]OK[/c2]",
-    "Checking database integrity..... [c2]OK[/c2]",
-    "Starting database service....... [c2]OK[/c2]",
-    "Connecting to central node...... [c2]OK[/c2]",
-    "Loading user profiles........... [c2]OK[/c2]",
-    "Initializing metrics subsystem.. [c2]OK[/c2]",
-    "",
-    "[c4]WARNING: Security protocol override detected[/c4]",
-    "[c4]WARNING: Unauthorized access attempt - Sector 7G[/c4]",
-    "[c4]WARNING: Memory corruption detected in security module[/c4]",
-    "[c2]NOTICE: Applying countermeasures...[/c2]",
-    "[c2]NOTICE: Rerouting security protocols...[/c2]",
-    "[c2]NOTICE: Enabling quantum encryption layer...[/c2]",
-    "[c3]SYSTEM: Diagnostics complete[/c3]",
-    "[c3]SYSTEM: All core systems functional[/c3]",
-    "[c4]ALERT: System glitch detected...[/c4]",
-    "[c4]ALERT: Memory address fault at 0xF7A23D1C[/c4]",
-    "[c4]ALERT: Stack corruption in visualization module[/c4]",
-    "[cd]CRITICAL: Interface corruption imminent...[/cd]",
-    "[cd]CRITICAL: Graphics subsystem unstable[/cd]",
-    "[cd]CRITICAL: Neural interface desynchronized[/cd]",
-    "[ce]SYSTEM: Transitioning to backup interface...[/ce]",
-    "[ce]SYSTEM: Rerouting visual protocols...[/ce]",
-    "[ce]SYSTEM: Enabling failsafe mode...[/ce]",
-    "",
-    "[c2]Initializing NuCaloric emergency interface...[/c2]",
-    "[c3]Loading baseline protocols...[/c3]",
-    "[c3]Establishing secure session...[/c3]",
-    "[c7]NuCaloric interface loading...[/c7]"
-];
-
-const BootupScene = ({ onComplete }) => {
+const BootupScene = ({ onComplete, specialMode }) => {
     const terminalContentRef = useRef(null);
     const [currentLine, setCurrentLine] = useState(0);
     const [bootupComplete, setBootupComplete] = useState(false);
@@ -79,14 +11,77 @@ const BootupScene = ({ onComplete }) => {
     const [showHeaderFooter, setShowHeaderFooter] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
 
-    // Start time display
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
+    // Initialize burger mode state from props - fixed ESLint error
+    const [burgerMode, setBurgerMode] = useState(specialMode === 'burger_mode');
 
-        return () => clearInterval(timer);
-    }, []);
+    // Terminal text data with color parsing
+    const terminalData = [
+        "[c2]NuCaloric Agricultural Industries[/c2]",
+        "[cf]────────────────────────────────[/cf]",
+        "",
+        "Color Test: [c0]█[/c0][c1]█[/c1][c2]█[/c2][c3]█[/c3][c4]█[/c4][c5]█[/c5][c6]█[/c6][c7]█[/c7][c8]█[/c8][c9]█[/c9][ca]█[/ca][cb]█[/cb][cc]█[/cc][cd]█[/cd][ce]█[/ce][cf]█[/cf]",
+        "",
+        "[c3]Quantified Health Monitoring System[/c3]",
+        "[c7]v3.2.1 (Build 7720-RC2)[/c7]",
+        "[p1]",
+        "[cd]█████████     ███      ███[/cd]",
+        "[cd]███      ███  ███      ███[/cd]",
+        "[cd]███      ███  ███      ███[/cd]",
+        "[cd]███      ███  █████████   [/cd]",
+        "",
+        "[p1]NuCaloric Systems v3.2.1 - Initializing...",
+        "[c8]* Initializing system hardware...[/c8]",
+        "[c8]* Performing memory checks...[/c8]",
+        "  - Primary memory bank.............. [c2]OK[/c2]",
+        "  - Extended memory.................. [c2]OK[/c2]",
+        "  - Cache coherency.................. [c2]OK[/c2]",
+        "  - NVRAM integrity.................. [c2]OK[/c2]",
+        "",
+        "Loading kernel modules.......... [c2]OK[/c2]",
+        "Loading microcode patches....... [c2]OK[/c2]",
+        "Checking system integrity...... [c2]OK[/c2]",
+        "Initializing memory............. [c2]OK[/c2]",
+        "Starting memory manager......... [c2]OK[/c2]",
+        "Initializing device tree........ [c2]OK[/c2]",
+        "Loading device drivers.......... [c2]OK[/c2]",
+        "Initializing PCI bus............ [c2]OK[/c2]",
+        "Probing USB controllers......... [c2]OK[/c2]",
+        "Starting I/O subsystem.......... [c2]OK[/c2]",
+        "Mounting file systems........... [c2]OK[/c2]",
+        "Starting system logger.......... [c2]OK[/c2]",
+        "Starting network services....... [c2]OK[/c2]",
+        "Establishing secure connection... [c2]OK[/c2]",
+        "Starting firewall............... [c2]OK[/c2]",
+        "Starting authentication service.. [c2]OK[/c2]",
+        "Checking database integrity..... [c2]OK[/c2]",
+        "Starting database service....... [c2]OK[/c2]",
+        "Connecting to central node...... [c2]OK[/c2]",
+        "Loading user profiles........... [c2]OK[/c2]",
+        "Initializing metrics subsystem.. [c2]OK[/c2]",
+        "",
+        "[c4]WARNING: Security protocol override detected[/c4]",
+        "[c4]WARNING: Unauthorized access attempt - Sector 7G[/c4]",
+        "[c4]WARNING: Memory corruption detected in security module[/c4]",
+        "[c2]NOTICE: Applying countermeasures...[/c2]",
+        "[c2]NOTICE: Rerouting security protocols...[/c2]",
+        "[c2]NOTICE: Enabling quantum encryption layer...[/c2]",
+        "[c3]SYSTEM: Diagnostics complete[/c3]",
+        "[c3]SYSTEM: All core systems functional[/c3]",
+        "[c4]ALERT: System glitch detected...[/c4]",
+        "[c4]ALERT: Memory address fault at 0xF7A23D1C[/c4]",
+        "[c4]ALERT: Stack corruption in visualization module[/c4]",
+        "[cd]CRITICAL: Interface corruption imminent...[/cd]",
+        "[cd]CRITICAL: Graphics subsystem unstable[/cd]",
+        "[cd]CRITICAL: Neural interface desynchronized[/cd]",
+        "[ce]SYSTEM: Transitioning to backup interface...[/ce]",
+        "[ce]SYSTEM: Rerouting visual protocols...[/ce]",
+        "[ce]SYSTEM: Enabling failsafe mode...[/ce]",
+        "",
+        "[c2]Initializing NuCaloric emergency interface...[/c2]",
+        "[c3]Loading baseline protocols...[/c3]",
+        "[c3]Establishing secure session...[/c3]",
+        "[c7]NuCaloric interface loading...[/c7]"
+    ];
 
     // Format time
     const formatTime = (date) => {
@@ -98,7 +93,35 @@ const BootupScene = ({ onComplete }) => {
         });
     };
 
+    // Parse color tags in terminal text
+    const parseColorTags = (text) => {
+        // Replace color tags with spans
+        let parsedText = text;
+
+        // Match [cX]text[/cX] pattern where X is a hex digit
+        const colorRegex = /\[c([0-9a-f])\](.*?)\[\/c\1\]/g;
+        parsedText = parsedText.replace(colorRegex, (match, color, content) => {
+            return `<span class="c${color}">${content}</span>`;
+        });
+
+        // Remove pause tags
+        parsedText = parsedText.replace(/\[p\d+\]/g, '');
+
+        return parsedText;
+    };
+
     useEffect(() => {
+        // Check to see if easter flag is enabled
+        const burgerModeActive = localStorage.getItem('burger_mode_active') === 'true';
+
+        if (burgerModeActive) {
+            // Clear the flag so it only happens once
+            localStorage.removeItem('burger_mode_active');
+
+            // Set burger mode to true - this will display the ASCII art
+            setBurgerMode(true);
+        }
+
         // Start adding terminal lines with a slight delay
         const timeout = setTimeout(() => {
             processNextLine();
@@ -115,7 +138,15 @@ const BootupScene = ({ onComplete }) => {
             setShowHeaderFooter(true);
         }, 1500);
 
-        return () => clearTimeout(timeout);
+        // Start time display
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+
+        return () => {
+            clearTimeout(timeout);
+            clearInterval(timer);
+        };
     }, []);
 
     // Process terminal lines recursively
@@ -168,25 +199,52 @@ const BootupScene = ({ onComplete }) => {
         setCurrentLine(prevLine => prevLine + 1);
     };
 
-    // Parse color tags in terminal text
-    const parseColorTags = (text) => {
-        // Replace color tags with spans
-        let parsedText = text;
-
-        // Match [cX]text[/cX] pattern where X is a hex digit
-        const colorRegex = /\[c([0-9a-f])\](.*?)\[\/c\1\]/g;
-        parsedText = parsedText.replace(colorRegex, (match, color, content) => {
-            return `<span class="c${color}">${content}</span>`;
-        });
-
-        // Remove pause tags
-        parsedText = parsedText.replace(/\[p\d+\]/g, '');
-
-        return parsedText;
-    };
-
     return (
         <div className={`bootup-scene ${isGlitching ? 'glitching' : ''}`}>
+            {/* Burger art background - only show when in burger_mode */}
+            {burgerMode && (
+                <div className="burger-art-background">
+                    <div
+                        className="burger-art-content"
+                        dangerouslySetInnerHTML={{ __html: parseColorTags(`
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣿⠟⠉⠉⠻⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣾⠿⠉⠀⠀⠀⠀⠀⠹⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾⡿⠛⠉[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣾⡿⠟⠁⠀⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣴⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣷⣶⣶⣦⣤⣤⣄⡀⠀⢀⣠⣾⣿⠿⠋⠀⠀⠀⠀⠀⣠[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⠶⠞⣿⠟⠋⠉⠉⠙⣻⠿⢿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⢀⡼⠁[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⠁⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⠟⠁⢠⡞⠁⠀⠀⠀⢀⡴⠋⠀⢀⡿⠋⠁⠀⠀⠀⠀⠀⠀⠀⡞⠁⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣼⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠃⠀⢠⠏⠀⠀⠀⠀⣰⠏⠀⠀⣠⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡥⠤⡀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣇⠀⣠⡏⠀⠀⠀⠀⣼⠁⠀⠀⣰⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠁[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣄⣄⣼⣿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡶⠋⠀⠀⠀⠀⢸⣧⠀⠀⣴⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢧⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⠀⠀⠀⠀⣾⡿⠿⣿⡿⠁[/cd]⠀⠀⠀⠀⠀ ⠀[c9]⣠⣶⣶⣶⡀[/c9]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[cd]⠙⠛⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳[/cd]
+                        [cf]⠀⠀⠀⠀⠀⠀⢀⣾⠿⠛⢿⣿⣷⣄⡀[/cf][cd]⣿⠃⠀⠈⠀⠀⠀⠀⠀⠀[/cd][c9]⢀⣾⣿⣿⣿⣿⣧[/c9]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                        [cf]⠀⠀⠀⣠⣤⣦⣼⣿⠀⠀⠀⣿⣿⣿⣿⣿⣦⣀[/cf]⠀⠀⠀⠀⠀⠀⠀[c9]⣿⣿⣿⣿⣿⣿⡿[/c9]⠀⠀⠀[cd]⢀⣀⣀⣀⣀⡀[/cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[c9]⣤⣾⣿⣿⣿⣷⣄[/c9]⠀⠀⠀⠀⠀⠀
+                        [cf]⠀⣠⣾⡿⠋⠉⠉⠁⠀⠀⠀⠀⠉⢯⡙⠻⣿⣿⣷⣤⡀[/cf]⠀⠀⠀[c9]⢿⣿⣿⣿⣿⡿⠃[/c9] [cd]⢀⡤⠖⠋⠉⠉⠉⠒⠦⣄[/cd]⠀⠀     [c9]⣾⣿⣿⣿⣿⣿⣿⣿⣧[/c9]⠀⠀⠀⠀⠀⠀
+                        [cf]⣾⣿⠋⠀⠀⠀⠀⣀⣀⠀⠀⠀⠀⠀⠙⢦⣄⠉⠻⢿⣿⣷⣦⡀[/cf]⠀[c9]⠈⠙⠛⠛⠋[/c9]⠀[cd]⢰⠟⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄[/cd]⠀⠀⠀[c9]⣿⣿⣿⣿⣿⣿⣿⣿⣿[/c9]⠀⠀⠀⠀⠀⠀
+                        [cf]⣿⡇⠀⠀⠀⣴⠟⣫⣿⣿⣄⠀⠀⠀⠀⡶⢌⡙⠶⣤⡈⠛⠿⣿⣷⣦⣀[/cf][cd]⠀⠀⠀⠀⡇⠀⢻⣄⠀⠀⣠⢷⠀⠀⠀⠀⠀⡶⠀⠘⡆⠀⠀[/cd][c9]⠻⣿⣿⣿⣿⣿⣿⣿⡟[/c9]⠀⠀⠀⠀⠀⠀
+                        [cf]⣿⡇⠀⠀⢸⣟⢸⣿⣿⣿⣿⠀⠀⠀⠀⡇⠀⠈⠛⠦⣝⡳⢤⣈⠛⠻⣿⣷⣦⣀[/cf]⠀⠀⠀⠀[cd]⠈⠙⠋⠁⠀⠛⠦⠤⠤⠚⠁⠀⢳[/cd]⠀⠀⠀[c9]⠈⠛⠿⠿⠿⠟⠋[/c9]⠀⠀⠀⠀⠀⠀⠀
+                        [cf]⣿⡇⠀⠀⠈⢿⣞⣿⣿⣿⠏⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠙⠳⢬⣛⠦⠀⠙⢻⣿⣷⣦⣀[/cf][cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cf]⣿⡇⠀⠀⠀⠀⠉⠛⠋⠁⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⠈⣿⠉⢻⣿⣷⣦⣀[/cf][cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cf]⣿⡇⠀⠀⠀⠀⠀⣠⣄⠀⠀⢰⠶⠒⠒⢧⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⢸⡇⢸⡟⢿⣷⣦⣴⣶⣶⣶⣶⣤⣔⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cf]
+                        [cf]⣿⡇⠀⠀⣤⠀⠀⠿⠿⠁⢀⡿⠀⠀⠀⡄⠈⠙⡷⢦⣄⡀⠀⠀⠀⠀⠀⠀⠀⣿⠀⢸⡇⢸⡇⠀⣿⠙⣿⣿⣉⠉⠙⠿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cf]
+                        [cf]⣿⡇⠀⠀⠙⠷⢤⣀⣠⠴⠛⠁⠀⠀⠀⠇⠀⠀⡇⢸⡏⢹⡷⢦⣄⡀⠀⠀⠀⣿⡀⢸⡇⢸⡇⠀⡟⠀⢸⠀⢹⡷⢦⣄⣘⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cf]
+                        [cf]⣿⣿⠢⣤⡀⠀⠀⠀⠀⠀⠀⣠⠾⣿⣿⡷⣤⣀⡇⠸⡇⢸⡇⢸⠉⠙⠳⢦⣄⡻⢿⣾⣧⣸⣧⠀⡇⠀⢸⠀⢸⡇⢤⣈⠙⠻⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cf]
+                        [cf]⢹⣿⣷⣌⡉⠛⠲⢶⣶⠖⠛⠛⢶⣄⡉⠛⠿⣽⣿⣶⣧⣸⡇⢸⠀⠀⠀⠀⠈⠙⠲⢮⣝⠻⣿⣷⣷⣄⣸⠀⢸⡇⠀⠈⠁⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cf]
+                        [cf]⠀⠈⠙⠻⢿⣷⣶⣤⣉⡻⢶⣄⣀⠈⠙⠳⢦⣈⡉⠻⢿⣿⣷⣾⣦⡀⠀⠀⠀⠀⠀⠀⠈⠙⠲⢭⣛⠿⣿⣷⣼⡇⠀⠀⠀⠀⠈⣿⡇[/cf][cd]⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⣀[/cd]
+                        [cf]⠀⠀⠀⠀⠀⠈⠙⠻⢿⣿⣷⣶⣽⣻⡦⠀⠀⠈⠙⠷⣦⣌⡙⠻⢿⣟⣷⣤⣀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠳⢯⣻⡇⠀⠀⠀⠀⠀⢸⣿[/cf][cd]⠀⣀⠀⠀⠀⠀⠈⠳⣄⠀⠀⠀⢀⡏⠙⠛[/cd]
+                        [cf]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠻⢿⣿⣿⣿⣶⣤⣤⣤⣀⣈⠛⠷⣤⣈⡛⠷⢽⡻⢶⣄⣀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠳⢤⣀⠀⠀⢸⣿⡀[/cf][cd]⠈⠳⢤⣀⣀⣰⠃⠈⠛⠶⠶⠿⠃⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⣿⡿⠛⠉⠙⠛⠛⠻⢷⣦⣄⣩⣿⠶⠖⠛⠛⠛⠛⠛⠛⠿⢷⣶⣦⣄[/cd]⠀⠀⠀⠀[cf]⠉⢻⣶⣿⣿⠇[/cf][cd]⠀⠀⠀⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⠁⠀⠀⠀⠀⠀⠀⠀⣿⣿⠋⠀⠀⠀⠀⠀⣠⠖⠂⠀⠀⠀   ⠈⠙⠿⣿⣦⡄⠀⠀⣸⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⣰⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀    ⠈⠛⢿⣶⣄⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⢸⣧⠀⠀⢀⠞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀     ⡠⠙⢿⣿⣇⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        [cd]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡿⠿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡿⠦⠠⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀     ⠀⠧⠤⠄⠙⡿⠿⠦⠤⠤⠤⠤⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/cd]
+                        `) }}
+                    />
+                </div>
+            )}
+
             {showHeaderFooter && (
                 <div className="terminal-header">
                     <span className="glow-text">NuCaloric Operating System</span>
