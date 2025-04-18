@@ -2,7 +2,7 @@
 
 @font-face {
     font-family: 'MarathonFont';
-    src: url('../fonts/modern/marathon_font.ttf') format('truetype');
+    src: url('/fonts/modern/marathon_font.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
