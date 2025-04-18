@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback, memo } from 'react';
-import nuLogo from '/public/images/logos/nu.png';
 
 // Memoized GlitchBands component for better performance
 const GlitchBands = memo(() => {
@@ -215,12 +214,6 @@ const LoginScene = ({ onLoginSuccess }) => {
                     <div className="logo-text"></div>
                     <div className="welcome-text" style={{ display: animation.showWelcome ? 'block' : 'none' }}>
                         Welcome
-                        style={{
-                        backgroundImage: `url(${nuLogo})`,
-                        backgroundSize: 'contain',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                    }}
                     </div>
                 </div>
             </div>
