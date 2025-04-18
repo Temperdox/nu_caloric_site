@@ -30,7 +30,7 @@ const PropagandaSub = ({ isModern = false }) => {
                 setLoading(true);
 
                 // Use import.meta.glob to dynamically import all image files
-                const images = import.meta.glob('../../../assets/img/propaganda/*.{gif,jpg,jpeg,png}', {
+                const images = import.meta.glob('/img/propaganda/*.{gif,jpg,jpeg,png}', {
                     eager: true,
                     import: 'default'
                 });

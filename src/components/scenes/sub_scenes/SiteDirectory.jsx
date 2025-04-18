@@ -8,42 +8,42 @@ const siteData = [
         id: 1,
         title: 'NuCaloric',
         description: 'Primary system dashboard for monitoring metrics and system status',
-        image: 'src/assets/img/nu.png',
+        image: 'img/logos/nu.png',
         url: '/sites/dashboard/main'
     },
     {
         id: 2,
         title: 'Traxus',
         description: 'User account management and permissions overview',
-        image: 'src/assets/img/TRAXUS.png',
+        image: 'img/logos/TRAXUS.png',
         url: 'http://traxus.global'
     },
     {
         id: 3,
         title: 'Mida',
         description: 'View detailed system logs and security events',
-        image: 'src/assets/img/MIDA.png',
+        image: 'img/logos/MIDA.png',
         url: '/system/logs'
     },
     {
         id: 4,
         title: 'Sekaguchi Genetics',
         description: 'Comprehensive data analytics and visualization tools',
-        image: 'src/assets/img/SEKIGUCHI.png',
+        image: 'img/logos/SEKIGUCHI.png',
         url: '/tools/analytics'
     },
     {
         id: 5,
         title: 'UESC',
         description: 'Lorem Ipsum',
-        image: 'src/assets/img/UESC.png',
+        image: 'img/logos/UESC.png',
         url: '/tools/monitor'
     },
     {
         id: 6,
         title: 'Cyber Acme',
         description: 'Lorem Ipsum',
-        image: 'src/assets/img/CYAC.png',
+        image: 'img/logos/CYAC.png',
         url: '/system/config/network'
     }
 ];

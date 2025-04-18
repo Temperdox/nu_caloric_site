@@ -1,6 +1,6 @@
 // SiteDirectorySub.jsx - Sub scene component for site directory
 import React, { useState, useCallback } from 'react';
-import SiteDirectory from '../components/SiteDirectory';
+import SiteDirectory from './SiteDirectory';
 
 // This sub scene can be used in both the retro and modern main scenes
 const SiteDirectorySub = ({ isModern = false, onNavigate }) => {
