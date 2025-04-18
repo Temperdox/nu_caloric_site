@@ -2,48 +2,56 @@
 import React, { useState, useRef } from 'react';
 import '../../../assets/css/SiteDirectorySub.css';
 
-// Sample site data - can be replaced with real data from an API or props
+// Import images directly
+import nuLogo from '/public/images/logos/nu.png';
+import traxusLogo from '/public/images/logos/TRAXUS.png';
+import midaLogo from '/public/images/logos/MIDA.png';
+import sekiguchiLogo from '/public/images/logos/SEKIGUCHI.png';
+import uescLogo from '/public/images/logos/UESC.png';
+import cyacLogo from '/public/images/logos/CYAC.png';
+
+// Sample site data with imported images
 const siteData = [
     {
         id: 1,
         title: 'NuCaloric',
         description: 'Primary system dashboard for monitoring metrics and system status',
-        image: 'img/logos/nu.png',
+        image: nuLogo,
         url: '/sites/dashboard/main'
     },
     {
         id: 2,
         title: 'Traxus',
         description: 'User account management and permissions overview',
-        image: 'img/logos/TRAXUS.png',
+        image: traxusLogo,
         url: 'http://traxus.global'
     },
     {
         id: 3,
         title: 'Mida',
         description: 'View detailed system logs and security events',
-        image: 'img/logos/MIDA.png',
+        image: midaLogo,
         url: '/system/logs'
     },
     {
         id: 4,
         title: 'Sekaguchi Genetics',
         description: 'Comprehensive data analytics and visualization tools',
-        image: 'img/logos/SEKIGUCHI.png',
+        image: sekiguchiLogo,
         url: '/tools/analytics'
     },
     {
         id: 5,
         title: 'UESC',
         description: 'Lorem Ipsum',
-        image: 'img/logos/UESC.png',
+        image: uescLogo,
         url: '/tools/monitor'
     },
     {
         id: 6,
         title: 'Cyber Acme',
         description: 'Lorem Ipsum',
-        image: 'img/logos/CYAC.png',
+        image: cyacLogo,
         url: '/system/config/network'
     }
 ];
