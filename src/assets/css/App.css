@@ -380,7 +380,7 @@ body {
 .logo-text {
   white-space: nowrap;
   overflow: hidden;
-  background-image: url('/public/images/logos/nu.png');
+  background-image: url('/public/images/logos/nuLogo.png');
   background-size: cover;
   backface-visibility: visible;
   background-position: center;

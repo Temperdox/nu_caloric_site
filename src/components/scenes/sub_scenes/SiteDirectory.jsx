@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import '../../../assets/css/SiteDirectorySub.css';
 
 // Import images directly
-import nuLogo from '/public/images/logos/nu.png';
+import nuLogo from '/public/images/logos/NU.png';
 import traxusLogo from '/public/images/logos/TRAXUS.png';
 import midaLogo from '/public/images/logos/MIDA.png';
 import sekiguchiLogo from '/public/images/logos/SEKIGUCHI.png';
